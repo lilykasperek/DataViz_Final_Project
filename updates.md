@@ -45,3 +45,7 @@ led <- history_of_rock %>% filter(artist == "Led Zeppelin")
 ggplot(data = led, aes(x = release_date, y = popularity)) +
   geom_line() 
 ```
+
+## March 23 End of Class
+
+I created a lollipop chart for political donations and continued to mess around with different data sets. I am working on customizing the chart and adding more to it. 

@@ -1,0 +1,72 @@
+---
+title: "final_project"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Political Donations
+```{r}
+library(tidyverse)
+library(ggthemes)
+pol_donations <- read_csv("/Users/lilykasperek/Desktop/my-website/content/post/2022-03-22-first-post/sports-political-donations.csv")
+pol_donations <- pol_donations %>% rename(year = 'Election Year')
+```
+
+```{r}
+pol_donations 
+nfl <- pol_donations %>% filter(League == "NFL") 
+nfl %>% group_by(Party) %>%
+  summarise(n = n())
+```
+
+```{r, message = FALSE, warning = FALSE, echo = FALSE}
+owner_rank <- pol_donations %>% group_by(Owner) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n)) %>%
+  mutate(rank = rank(desc(n))) %>%
+  filter(rank <= 25) %>%
+  mutate(owner = fct_reorder(.f = Owner, .x = n))
+
+ggplot(data = owner_rank, aes(x = owner, y = n)) +
+  geom_point(size=5, color="red", fill=alpha("orange", 0.3), alpha=0.7, shape=21, stroke=2) +
+  geom_segment(aes(x = owner, xend = owner, y = 0, yend = n)) +
+  coord_flip() +
+    labs(title = "Most Frequent Donators Among All Leagues",
+       y = "Count",
+       x = "Owners") +
+  theme_fivethirtyeight() 
+```
+
+## Blockbusters
+```{r}
+library(tidyverse)
+blockbusters <- read_csv("/Users/lilykasperek/Desktop/my-website/content/post/2022-03-22-first-post/Blockbusters_2019-1977.csv")
+blockbusters
+
+ggplot(data = blockbusters, aes(x = release_year, y = length_in_min)) +
+  geom_line()
+```
+
+## History of Rock
+```{r}
+library(tidyverse)
+history_of_rock <- read_csv("/Users/lilykasperek/Desktop/my-website/content/post/2022-03-22-first-post/history-of-rock-spotify.csv")
+
+history_of_rock %>% 
+
+led <- history_of_rock %>% filter(artist == "Led Zeppelin")
+
+ggplot(data = led, aes(x = release_date, y = popularity)) +
+  geom_line() 
+```
+
+## Unemployment
+
+```{r}
+unemployment_data_us <- read_csv("data/unemployment_data_us.csv")
+unemployment_data_us
+```
+
