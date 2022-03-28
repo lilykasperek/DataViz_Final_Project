@@ -53,3 +53,7 @@ I created a lollipop chart for political donations and continued to mess around 
 ## March 28 Beginning of Class 
 
 I changed my lollipop graph. Instead I made an interactive graph with the team owners who donate the most frequently, colored by league, displaying the amount donated when you hover over the points. I am stuck on ordering the owners by the amount of donations they made. I made another interactive graph. This graph is only looking at NFL team owners and shows the top 25 highest donations made and which owner made them (some owners made multiple). The donations are colored by political parties and when you hover over the points it shows where the donations were made. For both I want to figure out how to put multiple labels on the points. I also made a static graph of blockbusters from 1977 to 2019 by release year and IMBD rating. They are colored by MPAA Rating and the films with the 5 highest IMBD Ratings are labeled as well as the films with the 5 lowest. I filtered out one missing MPAA rating. I am now working on an interactive Lollipop chart showing the popularity of nirvana songs with release dates but I can’t figure out why it won’t work. 
+
+## March 28 After Class 
+
+I figured out why the nirvana lollipop graph was not working and fixed it. I also added a colour scale and made it interactive. I made a table as an extension of my visualization displaying the most frequent donators and am now trying to figure out a way to display the most frequent donator's data. 

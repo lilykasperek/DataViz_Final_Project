@@ -13,32 +13,8 @@ library(tidyverse)
 library(ggthemes)
 pol_donations <- read_csv("/Users/lilykasperek/Desktop/my-website/content/post/2022-03-22-first-post/sports-political-donations.csv")
 pol_donations <- pol_donations %>% rename(year = 'Election Year') %>% mutate(amount = parse_number(Amount)) 
+pol_donations
 library(plotly)
-```
-
-## Owners Who Donate The Most Frequently and How Much 
-```{r, message = FALSE, warning = FALSE, echo = FALSE}
-owner_rank <- pol_donations %>% group_by(Owner, League) %>%
-  summarise(n = n()) %>%
-  arrange(desc(n)) 
- 
-frequent <- pol_donations %>% group_by(Owner) %>%
-    mutate(n = n()) %>%
-    filter(n >= 65) %>%
-  arrange(n) %>%
-  mutate(donations = as.numeric(n)) %>%
-  mutate(order = fct_reorder(.f = Owner, .x = donations))
- 
-plot1 <- ggplot(data = frequent, aes(x = amount, y = order, label = Amount, colour = League)) +
-  geom_point() +
-  labs(title = "Owners Who Have Made the Most Donations",
-       y = "Owners",
-       x = "Amount Donated",
-       colour = "League") +
-  theme_fivethirtyeight() +
-  scale_colour_brewer(palette = "Dark2")
-
-ggplotly(plot1, tooltip = "label") 
 ```
 
 ## Top 25 Highest Political Donations by NFL Team Owners in 2016 
@@ -51,7 +27,7 @@ high_donations <- pol_donations %>% filter(year == "2016" & League == "NFL") %>%
   mutate(owner_ordered = fct_reorder(.f = Owner, .x = amount)) %>%
   mutate(party = fct_relevel(Party, c("Republican", "Democrat", "Bipartisan")))
 
-plot2 <- ggplot(data = high_donations, aes(x = amount, y = owner_ordered, label = Recipient, colour = party)) +
+plot1 <- ggplot(data = high_donations, aes(x = amount, y = owner_ordered, label = Recipient, colour = party)) +
   geom_point() +
   labs(x = "Amount Donated",
        y = "Owner",
@@ -61,7 +37,64 @@ plot2 <- ggplot(data = high_donations, aes(x = amount, y = owner_ordered, label 
   theme_fivethirtyeight()  +
   scale_colour_manual(values = c("red", "blue", "yellow")) 
 
+ggplotly(plot1, tooltip = "label") 
+```
+
+## Owners Who Donate The Most Frequently and How Much 
+```{r, message = FALSE, warning = FALSE, echo = FALSE}
+owner_rank <- pol_donations %>% group_by(Owner, League) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n)) 
+ 
+frequent <- pol_donations %>% group_by(Owner) %>%
+    mutate(n = n()) %>%
+    filter(n >= 65) %>%
+  arrange(desc(n)) %>%
+  mutate(donations = as.numeric(n)) 
+
+test <- frequent %>% mutate(owner = fct_reorder(.f = Owner, .x = n))
+test2 <- frequent %>% mutate(owner = fct_inorder(Owner))
+ 
+plot2 <- ggplot(data = test2, aes(x = amount, y = owner, label = Amount, colour = League)) +
+  geom_point() +
+  labs(title = "Owners Who Have Made the Most Donations",
+       y = "Owners",
+       x = "Amount Donated",
+       colour = "League") +
+  theme_fivethirtyeight() +
+  scale_colour_brewer(palette = "Dark2")
+
 ggplotly(plot2, tooltip = "label") 
+```
+
+## Going off Second Political Donations Visualization
+```{r}
+library(knitr)
+library(pander)
+library(tidyverse)
+
+owner_rank2 <- pol_donations %>% group_by(Owner, Team) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n)) %>%
+  filter(n >= 65)
+
+kable(owner_rank2, caption = "Frequency of Donations",
+      col.names = c("Owner", "Team", "Amount of Donations Made"))
+```
+
+## Examining Top Donator 
+```{r}
+charles_johnson <- pol_donations %>% filter(Owner == "Charles Johnson") %>%
+  filter(year == 2016 | year == 2018 | year == 2020) 
+
+ggplot(data = charles_johnson, aes(x = amount)) +
+  geom_freqpoly() 
+
+charles_johnson %>% group_by(Recipient, amount) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n))
+
+ggplot(data = charles_johnson, aes(x = amount, y = ))
 ```
 
 ## Blockbusters
@@ -120,13 +153,14 @@ nirvana <- history_of_rock %>% filter(artist == "Nirvana") %>% arrange(desc(popu
   rename(Release_Date = 'release_date')
 nirvana %>% select(order, everything())
 
-plot3 <- ggplot(data = nirvana, aes(x = popularity, y = order, label = Release_Date)) +
+plot3 <- ggplot(data = nirvana, aes(x = order, y = popularity, label = popularity, colour = popularity)) +
   geom_point() +
-  geom_segment(aes(x = popularity, xend = popularity, y = 0, yend = order)) +
+  geom_segment(aes(x = order, xend = order, y = 0, yend = popularity)) +
   coord_flip() +
-  labs(x = "Popularity",
-       y = "Song Title",
-       title = "Most Popular Nirvana Songs") 
+  labs(title = "Most Popular Nirvana Songs",
+       colour = "Popularity") +
+  theme_fivethirtyeight() +
+  scale_colour_viridis_b()
 
 ggplotly(plot3, tooltip = "label")
 ```
