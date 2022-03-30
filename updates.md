@@ -57,3 +57,8 @@ I changed my lollipop graph. Instead I made an interactive graph with the team o
 ## March 28 After Class 
 
 I figured out why the nirvana lollipop graph was not working and fixed it. I also added a colour scale and made it interactive. I made a table as an extension of my visualization displaying the most frequent donators and am now trying to figure out a way to display the most frequent donator's data. 
+
+## March 30 Beginning of Class
+
+I changed the color scale on my first two political donation visualizations.I created a simple visualization to display what party the recipients of donations made by Charles Johnson are associated with. I noticed that the same recipient had a different name in my recipients example, so I went back and noticed the same thing for others. I used ```fct_recode``` to fix this and my two visualizations. I changed the theme for many of my visualizations. I modified my blockbusters visualization so it was interactive and less visually overwhelming. I tried to rename axis ticks for the first visualization but can’t figure out what I am doing wrong. I capitalized interactive label on nirvana visualization. 
+
