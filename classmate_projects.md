@@ -9,3 +9,7 @@ Caleb is working on a shiny app about golf. He has made a static graph and worke
 ## March 28 
 
 Tom is working on an R package with Covid data sets. He has made maps and came up with queries. 
+
+## March 30 
+
+Emil is working on a shiny app for hockey data and is trying to make different visualizations of the data. 

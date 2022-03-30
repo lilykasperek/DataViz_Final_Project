@@ -62,3 +62,6 @@ I figured out why the nirvana lollipop graph was not working and fixed it. I als
 
 I changed the color scale on my first two political donation visualizations.I created a simple visualization to display what party the recipients of donations made by Charles Johnson are associated with. I noticed that the same recipient had a different name in my recipients example, so I went back and noticed the same thing for others. I used ```fct_recode``` to fix this and my two visualizations. I changed the theme for many of my visualizations. I modified my blockbusters visualization so it was interactive and less visually overwhelming. I tried to rename axis ticks for the first visualization but can’t figure out what I am doing wrong. I capitalized interactive label on nirvana visualization. 
 
+## March 30 After Class
+
+I messed around more with the blockbusters data set created two simple visualizations that I am hoping might lead somewhere. I also created a simple visualization for the history of rock data set. I struggled this class with ideas for visualizations. 

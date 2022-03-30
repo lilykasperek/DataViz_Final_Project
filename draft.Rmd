@@ -11,9 +11,15 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r, message = FALSE, warning = FALSE, echo = FALSE}
 library(tidyverse)
 library(ggthemes)
+
 pol_donations <- read_csv("/Users/lilykasperek/Desktop/my-website/content/post/2022-03-22-first-post/sports-political-donations.csv")
-pol_donations <- pol_donations %>% rename(year = 'Election Year') %>% mutate(amount = parse_number(Amount)) 
-pol_donations
+
+pol_donations <- pol_donations %>% rename(year = 'Election Year') %>% mutate(amount = parse_number(Amount)) %>% 
+  mutate(Recipient = fct_recode(Recipient, Hillary_Victory_Fund = "HILLARY VICTORY FUND", 
+                                Hillary_Victory_Fund = "Hillary Victory Fund",
+                                Office_Of_Commissioner_of_MLB_PAC = "Office of the Commissioner of Major League Baseball PAC",
+                                Office_Of_Commissioner_of_MLB_PAC = "OFFICE OF THE COMMISSIONER OF MAJOR LEAGUE BASEBALL POLITICAL ACTION COMMITTEE"))
+
 library(plotly)
 ```
 
@@ -29,13 +35,26 @@ high_donations <- pol_donations %>% filter(year == "2016" & League == "NFL") %>%
 
 plot1 <- ggplot(data = high_donations, aes(x = amount, y = owner_ordered, label = Recipient, colour = party)) +
   geom_point() +
-  labs(x = "Amount Donated",
-       y = "Owner",
+  labs(x = " ", 
+       y = " ",
        title = "Top 25 Highest Political Donations by NFL Team Owners in 2016",
        colour = "Political Party",
        subtitle = "What Influence May Wealthy Elites Have on National Elections?") +
-  theme_fivethirtyeight()  +
-  scale_colour_manual(values = c("red", "blue", "yellow")) 
+  scale_colour_viridis_d() 
+
+ggplot(data = high_donations, aes(x = amount, y = owner_ordered, label = Recipient, colour = party)) +
+  geom_point() +
+  labs(x = " ", 
+       y = " ",
+       title = "Top 25 Highest Political Donations by NFL Team Owners in 2016",
+       colour = "Political Party",
+       subtitle = "What Influence May Wealthy Elites Have on National Elections?") +
+  scale_colour_viridis_d()
+  
+    scale_x_discrete("Amount Donated", labels = abbreviate)
+
+scale_x_discrete(breaks = c("0e+00", "1e+05", "2e+05", "3e+05", "4e+05"),
+                  labels = c("0", "100", "200", "300", "400"))
 
 ggplotly(plot1, tooltip = "label") 
 ```
@@ -47,24 +66,33 @@ owner_rank <- pol_donations %>% group_by(Owner, League) %>%
   arrange(desc(n)) 
  
 frequent <- pol_donations %>% group_by(Owner) %>%
-    mutate(n = n()) %>%
-    filter(n >= 65) %>%
+  mutate(n = n()) %>%
+  filter(n >= 65) %>%
   arrange(desc(n)) %>%
-  mutate(donations = as.numeric(n)) 
-
-test <- frequent %>% mutate(owner = fct_reorder(.f = Owner, .x = n))
-test2 <- frequent %>% mutate(owner = fct_inorder(Owner))
+  mutate(donations = as.numeric(n))
  
-plot2 <- ggplot(data = test2, aes(x = amount, y = owner, label = Amount, colour = League)) +
+ggplot(data = frequent, aes(x = amount, y = Owner, label = Amount, colour = League)) +
   geom_point() +
   labs(title = "Owners Who Have Made the Most Donations",
        y = "Owners",
        x = "Amount Donated",
        colour = "League") +
-  theme_fivethirtyeight() +
-  scale_colour_brewer(palette = "Dark2")
+  theme_hc() +
+  scale_colour_viridis_d()
 
-ggplotly(plot2, tooltip = "label") 
+plot2 <- ggplot(data = frequent, aes(x = amount, y = Owner, label = Amount, colour = League)) +
+  geom_point() +
+  labs(title = "Owners Who Have Made the Most Donations",
+       y = "Owners",
+       x = "Amount Donated",
+       colour = "League") +
+  theme_hc() +
+  scale_colour_viridis_d()
+
+ggplotly(plot2, tooltip = "label")
+
+test <- frequent %>% mutate(owner = fct_reorder(.f = Owner, .x = n))
+test2 <- frequent %>% mutate(owner = fct_inorder(Owner))
 ```
 
 ## Going off Second Political Donations Visualization
@@ -78,62 +106,114 @@ owner_rank2 <- pol_donations %>% group_by(Owner, Team) %>%
   arrange(desc(n)) %>%
   filter(n >= 65)
 
-kable(owner_rank2, caption = "Frequency of Donations",
+kable(owner_rank2, caption = "Frequency of Donations from 2016 to 2020",
       col.names = c("Owner", "Team", "Amount of Donations Made"))
 ```
 
 ## Examining Top Donator 
 ```{r}
+library(ggthemes)
 charles_johnson <- pol_donations %>% filter(Owner == "Charles Johnson") %>%
   filter(year == 2016 | year == 2018 | year == 2020) 
 
-ggplot(data = charles_johnson, aes(x = amount)) +
-  geom_freqpoly() 
-
-charles_johnson %>% group_by(Recipient, amount) %>%
+cj_party <- charles_johnson %>% group_by(Party) %>%
   summarise(n = n()) %>%
-  arrange(desc(n))
+  mutate(party = fct_reorder(.f = Party, .x = n)) %>%
+  mutate(Party = fct_relevel(party, c("Republican", "Bipartisan, but mostly Republican",
+                                        "Democrat")))
 
-ggplot(data = charles_johnson, aes(x = amount, y = ))
+ggplot(data = cj_party, aes(x = party, y = n, fill = Party)) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_viridis_d() +
+  labs(title = "Count of Donations",
+       x = "Political Party",
+       y = "Count") +
+  theme_hc()
+```
+
+```{r}
+owner_rank2
+```
+
+## Organizations Receiving Most Donations Across All Leagues
+```{r}
+recipients <- pol_donations %>% group_by(Recipient, Party) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n)) %>%
+  filter(n >= 15) %>%
+  ungroup() %>%
+  mutate(recipient = fct_reorder(.f = Recipient, .x = n)) %>%
+  mutate(Party = fct_relevel(Party, c("Bipartisan", "Republican", "Democrat")))
+
+ggplot(data = recipients, aes(x = recipient, y = n, colour = Party)) +
+  geom_point() +
+  geom_segment(aes(x = recipient, xend = recipient, y = 0, yend = n)) +
+  coord_flip() +
+  labs(x = "Recipients",
+       y = "Count") +
+  labs(title = "Organizations Receiving Most Donations Across All Leagues") +
+  theme_hc() +
+  scale_colour_brewer(palette = "Dark2")
 ```
 
 ## Blockbusters
 ```{r, message = FALSE, warning = FALSE, echo = FALSE}
-library(ggrepel)
 blockbusters <- read_csv("/Users/lilykasperek/Desktop/my-website/content/post/2022-03-22-first-post/Blockbusters_2019-1977.csv")
 blockbusters
 ```
 
-## 5 Highest & Lowest IMBD Ratings Highlighted by Title
+## Blockbuster Ratings: 1977 to 2019
 ```{r, message = FALSE, warning = FALSE, echo = FALSE}
 blockbusters %>% group_by(mpaa_rating) %>%
   summarise(n = n()) 
 
-blockbusters1 <- blockbusters %>% filter(!is.na(mpaa_rating))
+blockbusters1 <- blockbusters %>% filter(!is.na(mpaa_rating)) %>%
+  rename(Film = 'film_title')
 
-interest <- blockbusters1 %>% mutate(rank = rank(desc(imdb_rating))) %>%
-  select(rank, everything()) %>%
-  arrange(rank) %>%
-  slice(1:5)
-
-interest2 <- blockbusters1 %>% mutate(rank = rank(imdb_rating)) %>%
-  select(rank, everything()) %>%
-  arrange(rank) %>%
-  slice(1:5)
-
-ggplot(data = blockbusters1, aes(x = release_year, y = imdb_rating, colour = mpaa_rating)) +
+plot6 <- ggplot(data = blockbusters1, aes(x = release_year, y = imdb_rating, colour = mpaa_rating,
+                                          label = Film)) +
   geom_point() +
-  geom_label_repel(data = interest, aes(label = film_title), show.legend = FALSE) +
-  geom_label_repel(data = interest2, aes(label = film_title), show.legend = FALSE) +
-   geom_point(data = interest, size = 3, shape = 1, show.legend = FALSE) +
-   geom_point(data = interest2, size = 3, shape = 1, show.legend = FALSE) +
   labs(y = "IMDB Rating",
        x = "Release Year",
        colour = "MPAA Rating",
-       title = "Blockbuster Ratings: 1977 to 2019",
-       subtitle = "5 Highest & Lowest IMBD Ratings Highlighted by Title") +
-  theme_fivethirtyeight() +
+       title = "Blockbuster Ratings: 1977 to 2019") +
+  theme_hc() +
   scale_colour_brewer(palette = "Dark2")
+
+ggplotly(plot6, tooltip = "label")
+```
+
+## 
+```{r}
+blockbusters
+
+interest <- blockbusters %>% mutate(rank = rank(desc(imdb_rating))) %>%
+  select(rank, everything()) %>%
+  arrange(rank) %>%
+  slice(1:5) %>%
+  mutate(film_title = fct_recode(film_title, 
+                                 LOTR_The_Return_Of_The_King = "The Lord of the Rings: The Return of the King",
+                                 LOTR_Fellowship_Of_The_Ring = "The Lord of the Rings: The Fellowship of the Ring"))
+interest 
+
+interest2 <- blockbusters %>% mutate(rank = rank(imdb_rating)) %>%
+  select(rank, everything()) %>%
+  arrange(rank) %>%
+  slice(1:5)
+interest2
+
+library(ggrepel)
+ggplot(data = interest, aes(x = release_year, y = domestic_gross)) +
+  geom_point() +
+  geom_label_repel(data = interest, aes(label = film_title)) +
+  geom_point(data = interest2, aes(x = release_year, y = domestic_gross)) +
+  geom_label_repel(data = interest2, aes(label = film_title))
+
+ggplot(data = blockbusters, aes(x = release_year, y = film_budget)) +
+  geom_hex() +
+  labs(x = "Release Year",
+       y = "Film Budget") 
 ```
 
 ## History of Rock
@@ -146,28 +226,47 @@ history_of_rock
 ## Most Popular Nirvana Songs 
 ```{r}
 history_of_rock %>% group_by(artist) %>%
-  summarise(n = n()) %>% arrange(desc(n))
+  summarise(n = n()) %>% arrange(desc(n)) 
 
-nirvana <- history_of_rock %>% filter(artist == "Nirvana") %>% arrange(desc(popularity)) %>%
-  mutate(order = fct_reorder(.f = name, .x = popularity)) %>%
+nirvana <- history_of_rock %>% rename(Popularity = 'popularity') %>%
+  filter(artist == "Nirvana") %>% arrange(desc(Popularity)) %>%
+  mutate(order = fct_reorder(.f = name, .x = Popularity)) %>%
   rename(Release_Date = 'release_date')
+
 nirvana %>% select(order, everything())
 
-plot3 <- ggplot(data = nirvana, aes(x = order, y = popularity, label = popularity, colour = popularity)) +
+plot3 <- ggplot(data = nirvana, aes(x = order, y = Popularity, label = Popularity, colour = Popularity)) +
   geom_point() +
-  geom_segment(aes(x = order, xend = order, y = 0, yend = popularity)) +
+  geom_segment(aes(x = order, xend = order, y = 0, yend = Popularity)) +
   coord_flip() +
   labs(title = "Most Popular Nirvana Songs",
-       colour = "Popularity") +
-  theme_fivethirtyeight() +
-  scale_colour_viridis_b()
+       colour = "Popularity", 
+       x = " ",
+       y = " ") +
+  theme_hc() +
+  scale_colour_viridis_b() 
 
 ggplotly(plot3, tooltip = "label")
 ```
 
-## Unemployment
 ```{r}
-unemployment_data_us <- read_csv("data/unemployment_data_us.csv")
-unemployment_data_us
+beatles <- history_of_rock %>% filter(artist == "The Beatles")
+
+plot10 <- ggplot(data = beatles, aes(x = release_date, y = popularity)) +
+  geom_line() +
+  geom_point() +
+  labs(x = "Release Date",
+       y = "Popularity")
+
+ggplotly(plot10, tooltip = "label")
+
+beatles %>% arrange(desc(popularity)) 
 ```
 
+## Unemployment Data Set
+```{r}
+library(lubridate)
+unemployment <- read_csv("data/unemployment_data_us.csv")
+ggplot(data = unemployment, aes(x = Date, y = Professional_Degree)) +
+  geom_point()
+```
