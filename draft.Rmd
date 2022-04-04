@@ -48,11 +48,25 @@ ggplot(data = high_donations, aes(x = amount, y = owner_ordered, label = Recipie
   geom_point() +
   labs(x = " ", 
        y = " ",
-       title = "Top 25 Highest Political Donations by NFL Team Owners in 2016",
+       title = "How Much Did NFL Owners Donate in 2016?",
        colour = "Political Party",
        subtitle = "What Influence Could NFL Team Owners Have on Elections?") +
   scale_colour_viridis_d() +
-  theme_bw()
+  theme_bw() +
+  theme(plot.title = element_text(family = "mono",
+                                  face = "bold",
+                                  size = 9.5),
+        plot.subtitle = element_text(family = "mono",
+                                     face = "italic",
+                                     size = 8),
+        legend.title = element_text(family = "mono",
+                                    face = "bold",
+                                    size = 8),
+        legend.text = element_text(family = "mono",
+                                   size = 8),
+        axis.text = element_text(family = "mono",
+                                 size = 8),
+        legend.box.background = element_rect())
 ```
 
 ## Table of Owners Who Make the Most Donations
@@ -67,9 +81,10 @@ owner_rank2 <- pol_donations %>% group_by(Owner, Team, League) %>%
   arrange(desc(n)) %>%
   filter(n >= 65)
 
-kable(owner_rank2, caption = "Who Makes the Most Donations Across All Leagues?",
-      col.names = c("Owner", "Team", "League", "Amount of Donations Made")) %>%
-  kable_classic()
+kable(owner_rank2, caption = "<b>Who Makes the Most Donations Across All Leagues?<b>", format = "html",
+      col.names = c("Owner", "Team", "League", "Donations Made")) %>%
+  kable_styling(html_font = "Cambria", bootstrap_options = "striped",
+                font_size = 9) 
 ```
 
 ## How Much Do They Donate? 
@@ -86,12 +101,28 @@ frequent <- pol_donations %>% group_by(Owner) %>%
  
 ggplot(data = frequent, aes(x = amount, y = Owner, label = Amount, colour = Party)) +
   geom_point() +
-  labs(title = "How Much Do They Donate?",
-       y = "Owners",
-       x = "Amount Donated",
+  labs(title = "How Many Donations Have They Made?",
+       subtitle = "Examining The Monetary Amount of Observed Political Donations",
+       y = " ",
+       x = " ",
        colour = "Party") +
   scale_colour_brewer(palette = "Dark2") +
-  theme(legend.position = "bottom")
+    theme_bw() +
+  theme(legend.position = "bottom",
+        plot.title = element_text(family = "mono",
+                                  face = "bold",
+                                  size = 12),
+        axis.text.x = element_text(family = "mono"),
+        axis.text.y = element_text(family = "mono"),
+        legend.title = element_text(family = "mono", 
+                                    face = "bold",
+                                    size = 5),
+        legend.text = element_text(family = "mono",
+                                   size = 5),
+        plot.subtitle = element_text(family = "mono",
+                                     face = "italic",
+                                     size = 9),
+        legend.box.background = element_rect())
 
 plot2 <- ggplot(data = frequent, aes(x = amount, y = Owner, label = Recipient, colour = Party)) +
   geom_point() +
@@ -126,9 +157,15 @@ ggplot(data = cj_party, aes(x = party, y = n, fill = Party)) +
   coord_flip() +
   scale_fill_viridis_d() +
   labs(title = "Count of Donations by Political Party?",
-       x = "Political Party",
-       y = "Count") +
-  theme(legend.position = "bottom") +
+       x = " ",
+       y = " ") +
+  theme(legend.position = "bottom",
+        plot.title = element_text(family = "mono",
+                                  face = "bold"),
+        axis.text = element_text(family = "mono"),
+        legend.title = element_text(family = "mono",
+                                    face = "bold"),
+        legend.text = element_text(family = "mono")) +
   geom_label(data = cj_party, aes(label = n), show.legend = FALSE) 
 ```
 
