@@ -65,3 +65,7 @@ I changed the color scale on my first two political donation visualizations.I cr
 ## March 30 After Class
 
 I messed around more with the blockbusters data set created two simple visualizations that I am hoping might lead somewhere. I also created a simple visualization for the history of rock data set. I struggled this class with ideas for visualizations. 
+
+## April 4 Beginning of Class
+
+I rearranged the order and changed the titles of my political donations visualizations so they flow in an order that makes sense. I decided to change the variable I was coloring by and the color scale for my visualization looking at how much the most frequent donators donate. Added a label to political donation top donator visualization to show how many donations were made to each party. Made a new table to show where the owner who donates the most donates to. Made a visualization displaying how many blockbusters the major domestic distributors have produced. Added themes to my tables with library(kableExtra). Moved the position of the legend/changed the themes on a few donations visualizations. Added a definition of blockbuster - not all films are blockbusters so data set obviously does not contain all films from 1977-2019. Need help coming up with more creative questions. Tried to use geom_density_ridges but it is not working and I’m not sure why. Tried to make line plot with multiple different lines but realized the data set I created had artists with only one observation 

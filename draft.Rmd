@@ -37,10 +37,12 @@ plot1 <- ggplot(data = high_donations, aes(x = amount, y = owner_ordered, label 
   geom_point() +
   labs(x = " ", 
        y = " ",
-       title = "Top 25 Highest Political Donations by NFL Team Owners in 2016",
-       colour = "Political Party",
-       subtitle = "What Influence May Wealthy Elites Have on National Elections?") +
-  scale_colour_viridis_d() 
+       title = "What Influence Could NFL Team Owners Have on Elections?",
+       colour = "Political Party") +
+  scale_colour_viridis_d() +
+  theme_bw()
+
+ggplotly(plot1, tooltip = "label") 
 
 ggplot(data = high_donations, aes(x = amount, y = owner_ordered, label = Recipient, colour = party)) +
   geom_point() +
@@ -48,18 +50,29 @@ ggplot(data = high_donations, aes(x = amount, y = owner_ordered, label = Recipie
        y = " ",
        title = "Top 25 Highest Political Donations by NFL Team Owners in 2016",
        colour = "Political Party",
-       subtitle = "What Influence May Wealthy Elites Have on National Elections?") +
-  scale_colour_viridis_d()
-  
-    scale_x_discrete("Amount Donated", labels = abbreviate)
-
-scale_x_discrete(breaks = c("0e+00", "1e+05", "2e+05", "3e+05", "4e+05"),
-                  labels = c("0", "100", "200", "300", "400"))
-
-ggplotly(plot1, tooltip = "label") 
+       subtitle = "What Influence Could NFL Team Owners Have on Elections?") +
+  scale_colour_viridis_d() +
+  theme_bw()
 ```
 
-## Owners Who Donate The Most Frequently and How Much 
+## Table of Owners Who Make the Most Donations
+```{r}
+library(knitr)
+library(pander)
+library(tidyverse)
+library(kableExtra)
+
+owner_rank2 <- pol_donations %>% group_by(Owner, Team, League) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n)) %>%
+  filter(n >= 65)
+
+kable(owner_rank2, caption = "Who Makes the Most Donations Across All Leagues?",
+      col.names = c("Owner", "Team", "League", "Amount of Donations Made")) %>%
+  kable_classic()
+```
+
+## How Much Do They Donate? 
 ```{r, message = FALSE, warning = FALSE, echo = FALSE}
 owner_rank <- pol_donations %>% group_by(Owner, League) %>%
   summarise(n = n()) %>%
@@ -71,43 +84,29 @@ frequent <- pol_donations %>% group_by(Owner) %>%
   arrange(desc(n)) %>%
   mutate(donations = as.numeric(n))
  
-ggplot(data = frequent, aes(x = amount, y = Owner, label = Amount, colour = League)) +
+ggplot(data = frequent, aes(x = amount, y = Owner, label = Amount, colour = Party)) +
   geom_point() +
-  labs(title = "Owners Who Have Made the Most Donations",
+  labs(title = "How Much Do They Donate?",
        y = "Owners",
        x = "Amount Donated",
-       colour = "League") +
-  theme_hc() +
-  scale_colour_viridis_d()
+       colour = "Party") +
+  scale_colour_brewer(palette = "Dark2") +
+  theme(legend.position = "bottom")
 
-plot2 <- ggplot(data = frequent, aes(x = amount, y = Owner, label = Amount, colour = League)) +
+plot2 <- ggplot(data = frequent, aes(x = amount, y = Owner, label = Recipient, colour = Party)) +
   geom_point() +
-  labs(title = "Owners Who Have Made the Most Donations",
+  labs(title = "How Much Do They Donate & To Who?",
        y = "Owners",
        x = "Amount Donated",
-       colour = "League") +
-  theme_hc() +
-  scale_colour_viridis_d()
+       colour = "Party") +
+  theme_grey() +
+  scale_colour_brewer(palette = "Dark2") +
+  theme(legend.position = "bottom")
 
 ggplotly(plot2, tooltip = "label")
 
 test <- frequent %>% mutate(owner = fct_reorder(.f = Owner, .x = n))
 test2 <- frequent %>% mutate(owner = fct_inorder(Owner))
-```
-
-## Going off Second Political Donations Visualization
-```{r}
-library(knitr)
-library(pander)
-library(tidyverse)
-
-owner_rank2 <- pol_donations %>% group_by(Owner, Team) %>%
-  summarise(n = n()) %>%
-  arrange(desc(n)) %>%
-  filter(n >= 65)
-
-kable(owner_rank2, caption = "Frequency of Donations from 2016 to 2020",
-      col.names = c("Owner", "Team", "Amount of Donations Made"))
 ```
 
 ## Examining Top Donator 
@@ -126,17 +125,26 @@ ggplot(data = cj_party, aes(x = party, y = n, fill = Party)) +
   geom_col() +
   coord_flip() +
   scale_fill_viridis_d() +
-  labs(title = "Count of Donations",
+  labs(title = "Count of Donations by Political Party?",
        x = "Political Party",
        y = "Count") +
-  theme_hc()
+  theme(legend.position = "bottom") +
+  geom_label(data = cj_party, aes(label = n), show.legend = FALSE) 
 ```
 
+## What Are Some of These Organizations? 
 ```{r}
-owner_rank2
+organizations <- charles_johnson %>% group_by(Recipient, Party) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n)) %>%
+  filter(n >= 2)
+
+kable(organizations, caption = "What Are Some Organizations Charles Johnson Donates To?",
+      col.names = c("Recipient", "Political Party", "Amount of Donations Made"))  %>%
+  kable_classic()
 ```
 
-## Organizations Receiving Most Donations Across All Leagues
+## Organizations Receiving Most Donations Across All Leagues 
 ```{r}
 recipients <- pol_donations %>% group_by(Recipient, Party) %>%
   summarise(n = n()) %>%
@@ -153,11 +161,12 @@ ggplot(data = recipients, aes(x = recipient, y = n, colour = Party)) +
   labs(x = "Recipients",
        y = "Count") +
   labs(title = "Organizations Receiving Most Donations Across All Leagues") +
-  theme_hc() +
-  scale_colour_brewer(palette = "Dark2")
+  theme_bw() +
+  scale_colour_brewer(palette = "Dark2") +
+  theme(legend.position = "bottom")
 ```
 
-## Blockbusters
+## Blockbusters: A blockbuster is a Hollywood movie that's made with a large budget and big stars. A true blockbuster is extremely popular and brings in a lot of money (https://www.vocabulary.com/dictionary/blockbuster). 
 ```{r, message = FALSE, warning = FALSE, echo = FALSE}
 blockbusters <- read_csv("/Users/lilykasperek/Desktop/my-website/content/post/2022-03-22-first-post/Blockbusters_2019-1977.csv")
 blockbusters
@@ -184,7 +193,49 @@ plot6 <- ggplot(data = blockbusters1, aes(x = release_year, y = imdb_rating, col
 ggplotly(plot6, tooltip = "label")
 ```
 
-## 
+## Has the Budget for Blockbusters Increased Throughout Time? 
+```{r}
+ggplot(data = blockbusters, aes(x = release_year, y = film_budget, colour = release_year)) +
+  geom_point() +
+  geom_smooth(se = FALSE, method = "lm") +
+  labs(x = "Release Year",
+       y = "Film Budget",
+       title = "Has the Budget for Blockbusters Increased Throughout Time?",
+       subtitle = "Film Budget for Blockbuesters: 1977-2019") +
+  theme_bw() +
+  scale_colour_viridis_c() +
+  theme(legend.position = "none")
+
+ggplot(data = blockbusters, aes(x = release_year, y = film_budget)) +
+  geom_hex() +
+  geom_smooth(se = FALSE, method = "lm") +
+  labs(x = "Release Year",
+       y = "Film Budget", 
+       title = "Has the Budget for Blockbusters Increased Throughout Time?",
+       subtitle = "Film Budget for Blockbuesters: 1977-2019") +
+  theme_bw() 
+```
+
+## Which American/Domestic Distributor Has Produced the Most Blockbusters 1977-2019
+```{r}
+blockbusters3 <- blockbusters %>% group_by(domestic_distributor) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n)) %>%
+  mutate(order = fct_reorder(.f = domestic_distributor, .x = n)) %>%
+  filter(!n == 1)
+
+ggplot(data = blockbusters3, aes(x = order, y = n, fill = order)) +
+  geom_col() +
+  coord_flip() +
+  geom_label(data = blockbusters3, aes(label = n), show.legend = FALSE) +
+  labs(x = "Amount of Films Produced",
+       y = "Domestic Distributor",
+       title = "Amount of Blockbusters Produced by Domestic Distributors: 1977-2019") +
+  theme_bw() +
+  theme(legend.position = "none")
+```
+
+## Work in Progress 
 ```{r}
 blockbusters
 
@@ -209,11 +260,6 @@ ggplot(data = interest, aes(x = release_year, y = domestic_gross)) +
   geom_label_repel(data = interest, aes(label = film_title)) +
   geom_point(data = interest2, aes(x = release_year, y = domestic_gross)) +
   geom_label_repel(data = interest2, aes(label = film_title))
-
-ggplot(data = blockbusters, aes(x = release_year, y = film_budget)) +
-  geom_hex() +
-  labs(x = "Release Year",
-       y = "Film Budget") 
 ```
 
 ## History of Rock
@@ -239,28 +285,51 @@ plot3 <- ggplot(data = nirvana, aes(x = order, y = Popularity, label = Popularit
   geom_point() +
   geom_segment(aes(x = order, xend = order, y = 0, yend = Popularity)) +
   coord_flip() +
-  labs(title = "Most Popular Nirvana Songs",
+  labs(title = "Most Popular Nirvana Songs: 1991-2018",
        colour = "Popularity", 
        x = " ",
        y = " ") +
-  theme_hc() +
-  scale_colour_viridis_b() 
+  theme_bw() +
+  scale_colour_viridis_b() +
+  theme(legend.position = "none")
 
 ggplotly(plot3, tooltip = "label")
 ```
 
+## Trying to Make Density Ridges Plot 
 ```{r}
-beatles <- history_of_rock %>% filter(artist == "The Beatles")
+## install.packages("ggridges")
+library(ggridges)
 
-plot10 <- ggplot(data = beatles, aes(x = release_date, y = popularity)) +
+nirvana_small <- nirvana %>% slice(1:5) %>%
+  mutate(order = fct_reorder(.f = name, .x = valence))
+ggplot(data = nirvana_small, aes(x = order, y = valence)) +
+  geom_density_ridges() +
+  coord_flip() +
+  labs(x = "Title",
+       y = "Valence")
+```
+
+## Works in Progress - Simple Visualizations
+```{r}
+nirvana_line <- nirvana %>% rename(Title = 'name')
+plot10 <- ggplot(data = nirvana_line, aes(x = Release_Date, y = Popularity, label = Title)) +
   geom_line() +
-  geom_point() +
+  geom_point(colour = "darkolivegreen") +
   labs(x = "Release Date",
-       y = "Popularity")
+       y = "Popularity",
+       title = "Comparing Popularity by Release Date") +
+  theme_bw() +
+  theme(legend.position = "none")
 
 ggplotly(plot10, tooltip = "label")
 
-beatles %>% arrange(desc(popularity)) 
+table <- history_of_rock %>% group_by(artist) %>%
+  summarise(mean = mean(popularity)) %>%
+  arrange(desc(mean)) %>%
+  slice(1:10)
+
+top10 <- history_of_rock %>% arrange(desc(popularity)) %>% slice(1:10)
 ```
 
 ## Unemployment Data Set
