@@ -73,3 +73,11 @@ I rearranged the order and changed the titles of my political donations visualiz
 ## April 4th After Class
 
 Mostly worked on using theme() to change different elements of my visualizations so that they look better, and will probably continue to work on this outside of class as well. I am fairly sure I have decided on a common theme, at least for my political donations visualizations. 
+
+## April 6th Beginning of Class 
+
+I continued working with theme(), and now have a common font and theme in my political donation visualizations. I should be done with these visualizations except for some problems I need to fix. I added the scroll feature to one of my tables. I changed my blockbuster visualization so it is not as simple - it is now faceted. I continued common font and theme elements for my other visualizations. I changed a bar plot into a lollipop plot. I am debating if I want to keep my interactive plot or start over so I can make it more complex. Came up with new goals: fix order on political visualization, figure out how to change axis labels representing monetary values from scientific notation, figure out how to create geom_density_ridges() visualization. Need to come up with more visualizations - might change/add data sets, thinking about making a map or app for one subsection of blogdown. 
+
+## April 6th After Class 
+
+Fixed the order of the y axis for my political donations visualization so it is ordered from most observed donations to least. Figured out how to change labels from scientific notation to monetary values. Decided to get rid of my interactive plots because they can not really be customized. Installed library(ggpmisc) and am trying to figure out how to use it to plot tables on my visualizations. Need to make more complex visualizations, add more data sets etc. 

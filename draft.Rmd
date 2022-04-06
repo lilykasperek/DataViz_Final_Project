@@ -21,6 +21,9 @@ pol_donations <- pol_donations %>% rename(year = 'Election Year') %>% mutate(amo
                                 Office_Of_Commissioner_of_MLB_PAC = "OFFICE OF THE COMMISSIONER OF MAJOR LEAGUE BASEBALL POLITICAL ACTION COMMITTEE"))
 
 library(plotly)
+options(scipen = 10)
+## install.packages("ggpmisc")
+library(ggpmisc)
 ```
 
 ## Top 25 Highest Political Donations by NFL Team Owners in 2016 
@@ -33,19 +36,8 @@ high_donations <- pol_donations %>% filter(year == "2016" & League == "NFL") %>%
   mutate(owner_ordered = fct_reorder(.f = Owner, .x = amount)) %>%
   mutate(party = fct_relevel(Party, c("Republican", "Democrat", "Bipartisan")))
 
-plot1 <- ggplot(data = high_donations, aes(x = amount, y = owner_ordered, label = Recipient, colour = party)) +
-  geom_point() +
-  labs(x = " ", 
-       y = " ",
-       title = "What Influence Could NFL Team Owners Have on Elections?",
-       colour = "Political Party") +
-  scale_colour_viridis_d() +
-  theme_bw()
-
-ggplotly(plot1, tooltip = "label") 
-
 ggplot(data = high_donations, aes(x = amount, y = owner_ordered, label = Recipient, colour = party)) +
-  geom_point(size = 3) +
+  geom_point(size = 2) +
   labs(x = " ", 
        y = " ",
        title = "How Much Did NFL Owners Donate in 2016?",
@@ -70,7 +62,7 @@ ggplot(data = high_donations, aes(x = amount, y = owner_ordered, label = Recipie
         axis.text = element_text(family = "mono",
                                  size = 8),
         legend.box.background = element_rect(),
-        legend.position = "bottom")
+        legend.position = "bottom") 
 ```
 
 ## Table of Owners Who Make the Most Donations
@@ -102,8 +94,15 @@ frequent <- pol_donations %>% group_by(Owner) %>%
   filter(n >= 65) %>%
   arrange(desc(n)) %>%
   mutate(donations = as.numeric(n))
- 
-ggplot(data = frequent, aes(x = amount, y = Owner, label = Amount, colour = Party)) +
+
+level_order <- factor(frequent$Owner, level = c('Stephen M. Ross', 'Herbert Simon',
+                                                'Jerry Reinsdorf', 'Ken Kendrick',
+                                                'Jimmy and Susan Haslam',
+                                                'Jody Allen (Paul G. Allen Trust)',
+                                                'Dan DeVos', 'John Rogers',
+                                                'Micky Arison', 'Charles Johnson'))
+
+ggplot(data = frequent, aes(x = amount, y = level_order, label = Amount, colour = Party)) +
   geom_point() +
   labs(title = "How Many Donations Have They Made?",
        subtitle = "Examining The Monetary Amount of Observed Political Donations",
@@ -132,21 +131,6 @@ ggplot(data = frequent, aes(x = amount, y = Owner, label = Amount, colour = Part
                                      vjust = 5),
         legend.box.just = "left",
         legend.box.background = element_rect())
-
-plot2 <- ggplot(data = frequent, aes(x = amount, y = Owner, label = Recipient, colour = Party)) +
-  geom_point() +
-  labs(title = "How Much Do They Donate & To Who?",
-       y = "Owners",
-       x = "Amount Donated",
-       colour = "Party") +
-  theme_grey() +
-  scale_colour_brewer(palette = "Dark2") +
-  theme(legend.position = "bottom")
-
-ggplotly(plot2, tooltip = "label")
-
-test <- frequent %>% mutate(owner = fct_reorder(.f = Owner, .x = n))
-test2 <- frequent %>% mutate(owner = fct_inorder(Owner))
 ```
 
 ## Examining Top Donator 
@@ -158,13 +142,15 @@ charles_johnson <- pol_donations %>% filter(Owner == "Charles Johnson") %>%
 cj_party <- charles_johnson %>% group_by(Party) %>%
   summarise(n = n()) %>%
   mutate(party = fct_reorder(.f = Party, .x = n)) %>%
-  mutate(Party = fct_relevel(party, c("Republican", "Bipartisan, but mostly Republican",
-                                        "Democrat")))
+   mutate(Party = fct_relevel(party, c("Republican", "Bipartisan, but mostly Republican",
+                                         "Democrat")))
+
+level_order2 <- factor(charles_johnson$Party, level = c('Republican', 'Democrat', 'Bipartisan, but mostly Republican'))
 
 ggplot(data = cj_party, aes(x = party, y = n, fill = Party)) +
   geom_col() +
   coord_flip() +
-  scale_fill_viridis_d() +
+  scale_fill_viridis_d(option = "plasma") +
   labs(title = "Is There Any Political Party Receiving More Support From Charles Johnson?",
        x = " ",
        y = "Count of Donations") +
@@ -185,9 +171,17 @@ ggplot(data = cj_party, aes(x = party, y = n, fill = Party)) +
         axis.title.x = element_text(family = "mono",
                                     size = 9,
                                     face = "italic",
-                                    margin = margin(t = 20))) +
-  geom_label(data = cj_party, aes(label = n), show.legend = FALSE,
-             label.size = 1)
+                                    margin = margin(t = 20))) 
+
+table <- data.frame(Party = rep(c("Republican", "Bipartisan, but mostly Republican",
+                                "Democrat", each = 1),
+                              Count = rep(c("207", "4", "2"), 1)))
+table
+
+ggplot(data = cj_party, aes(x = party, y = n, fill = Party)) +
+  geom_col() + 
+  annotate(geom = "table") +
+  coord_flip()
 ```
 
 ## What Are Some of These Organizations? 
@@ -225,7 +219,7 @@ ggplot(data = recipients, aes(x = recipient, y = n, colour = Party)) +
   coord_flip() +
   labs(x = " ",
        y = "Count of Donations") +
-  labs(title = "Organizations Receiving Most Donations Across All Leagues") +
+  labs(title = "Organizations Receiving Most Donations Among All Owners") +
   scale_colour_brewer(palette = "Dark2") +
   theme(legend.position = "bottom") +
   scale_x_discrete(labels = new_names) +
@@ -245,6 +239,10 @@ ggplot(data = recipients, aes(x = recipient, y = n, colour = Party)) +
         legend.text = element_text(family = "mono"),
         axis.ticks = element_blank(),
          legend.box.background = element_rect())
+
+pol_donations %>% group_by(League) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n))
 ```
 
 ## Blockbusters: A blockbuster is a Hollywood movie that's made with a large budget and big stars. A true blockbuster is extremely popular and brings in a lot of money (https://www.vocabulary.com/dictionary/blockbuster). 
@@ -260,8 +258,6 @@ blockbusters %>% group_by(mpaa_rating) %>%
 
 blockbusters1 <- blockbusters %>% filter(!is.na(mpaa_rating)) %>%
   rename(Film = 'film_title')
-
-plot6 
   
 ggplot(data = blockbusters1, aes(x = release_year, y = imdb_rating, colour = mpaa_rating,
                                           label = Film)) +
@@ -289,6 +285,10 @@ ggplot(data = blockbusters1, aes(x = release_year, y = imdb_rating, colour = mpa
         axis.title.x = element_text(margin = margin(t = 20, b = 10)),
         strip.text = element_text(family = "mono",
                                   face = "bold"))
+
+blockbusters %>% group_by(mpaa_rating) %>%
+  summarise(n = n()) %>%
+  filter(!is.na(mpaa_rating))
 ```
 
 ## Has the Budget for Blockbusters Increased Throughout Time? 
