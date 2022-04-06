@@ -45,7 +45,7 @@ plot1 <- ggplot(data = high_donations, aes(x = amount, y = owner_ordered, label 
 ggplotly(plot1, tooltip = "label") 
 
 ggplot(data = high_donations, aes(x = amount, y = owner_ordered, label = Recipient, colour = party)) +
-  geom_point() +
+  geom_point(size = 3) +
   labs(x = " ", 
        y = " ",
        title = "How Much Did NFL Owners Donate in 2016?",
@@ -55,10 +55,13 @@ ggplot(data = high_donations, aes(x = amount, y = owner_ordered, label = Recipie
   theme_bw() +
   theme(plot.title = element_text(family = "mono",
                                   face = "bold",
-                                  size = 9.5),
+                                  size = 15,
+                                  margin = margin(c(t = 20,
+                                                    b = 50,
+                                                    vjust = 10))),
         plot.subtitle = element_text(family = "mono",
                                      face = "italic",
-                                     size = 8),
+                                     size = 10),
         legend.title = element_text(family = "mono",
                                     face = "bold",
                                     size = 8),
@@ -66,7 +69,8 @@ ggplot(data = high_donations, aes(x = amount, y = owner_ordered, label = Recipie
                                    size = 8),
         axis.text = element_text(family = "mono",
                                  size = 8),
-        legend.box.background = element_rect())
+        legend.box.background = element_rect(),
+        legend.position = "bottom")
 ```
 
 ## Table of Owners Who Make the Most Donations
@@ -111,17 +115,22 @@ ggplot(data = frequent, aes(x = amount, y = Owner, label = Amount, colour = Part
   theme(legend.position = "bottom",
         plot.title = element_text(family = "mono",
                                   face = "bold",
-                                  size = 12),
+                                  size = 12,
+                                  margin = margin(c(t = 50,
+                                                    b = 50)),
+                                  vjust = 10),
         axis.text.x = element_text(family = "mono"),
         axis.text.y = element_text(family = "mono"),
         legend.title = element_text(family = "mono", 
                                     face = "bold",
-                                    size = 5),
+                                    size = 7),
         legend.text = element_text(family = "mono",
-                                   size = 5),
+                                   size = 6),
         plot.subtitle = element_text(family = "mono",
                                      face = "italic",
-                                     size = 9),
+                                     size = 9,
+                                     vjust = 5),
+        legend.box.just = "left",
         legend.box.background = element_rect())
 
 plot2 <- ggplot(data = frequent, aes(x = amount, y = Owner, label = Recipient, colour = Party)) +
@@ -156,17 +165,29 @@ ggplot(data = cj_party, aes(x = party, y = n, fill = Party)) +
   geom_col() +
   coord_flip() +
   scale_fill_viridis_d() +
-  labs(title = "Count of Donations by Political Party?",
+  labs(title = "Is There Any Political Party Receiving More Support From Charles Johnson?",
        x = " ",
-       y = " ") +
+       y = "Count of Donations") +
   theme(legend.position = "bottom",
         plot.title = element_text(family = "mono",
-                                  face = "bold"),
+                                  face = "bold",
+                                  hjust = 0.5,
+                                  size = 13,
+                                  margin = margin(c(t = 50,
+                                                    b = 50)),
+                                  vjust = 10),
         axis.text = element_text(family = "mono"),
         legend.title = element_text(family = "mono",
                                     face = "bold"),
-        legend.text = element_text(family = "mono")) +
-  geom_label(data = cj_party, aes(label = n), show.legend = FALSE) 
+        legend.text = element_text(family = "mono"),
+        axis.ticks.y = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.x = element_text(family = "mono",
+                                    size = 9,
+                                    face = "italic",
+                                    margin = margin(t = 20))) +
+  geom_label(data = cj_party, aes(label = n), show.legend = FALSE,
+             label.size = 1)
 ```
 
 ## What Are Some of These Organizations? 
@@ -176,9 +197,11 @@ organizations <- charles_johnson %>% group_by(Recipient, Party) %>%
   arrange(desc(n)) %>%
   filter(n >= 2)
 
-kable(organizations, caption = "What Are Some Organizations Charles Johnson Donates To?",
+kable(organizations, caption = "<b>What Are Some Organizations Charles Johnson Donates To?<b>",
       col.names = c("Recipient", "Political Party", "Amount of Donations Made"))  %>%
-  kable_classic()
+  kable_styling(html_font = "Cambria", bootstrap_options = "striped",
+                font_size = 15) %>%
+  scroll_box(height = "500px")
 ```
 
 ## Organizations Receiving Most Donations Across All Leagues 
@@ -191,16 +214,37 @@ recipients <- pol_donations %>% group_by(Recipient, Party) %>%
   mutate(recipient = fct_reorder(.f = Recipient, .x = n)) %>%
   mutate(Party = fct_relevel(Party, c("Bipartisan", "Republican", "Democrat")))
 
+new_names <- c("Collins For Senator", "McSally for Senate Inc.",
+               "ActBlue", "Portman For Senate Committee", "NRCC",
+               "NRSC", "Hillary Victory Fund", "Team Ryan", 
+               "Office of the Commissioner of MLB PAC", "Gridirion PAC")
+
 ggplot(data = recipients, aes(x = recipient, y = n, colour = Party)) +
   geom_point() +
   geom_segment(aes(x = recipient, xend = recipient, y = 0, yend = n)) +
   coord_flip() +
-  labs(x = "Recipients",
-       y = "Count") +
+  labs(x = " ",
+       y = "Count of Donations") +
   labs(title = "Organizations Receiving Most Donations Across All Leagues") +
-  theme_bw() +
   scale_colour_brewer(palette = "Dark2") +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") +
+  scale_x_discrete(labels = new_names) +
+  theme(plot.title = element_text(family = "mono",
+                                  face = "bold",
+                                  margin = margin(c(t = 50,
+                                                    b = 50)),
+                                  vjust = 10),
+        axis.text = element_text(family = "mono"),
+        axis.title = element_text(family = "mono",
+                                  size = 8),
+        axis.title.x = element_text(size = 10,
+                                    margin = margin(t = 20,
+                                                    b = 10)),
+        legend.title = element_text(family = "mono",
+                                    face = "bold"),
+        legend.text = element_text(family = "mono"),
+        axis.ticks = element_blank(),
+         legend.box.background = element_rect())
 ```
 
 ## Blockbusters: A blockbuster is a Hollywood movie that's made with a large budget and big stars. A true blockbuster is extremely popular and brings in a lot of money (https://www.vocabulary.com/dictionary/blockbuster). 
@@ -217,40 +261,62 @@ blockbusters %>% group_by(mpaa_rating) %>%
 blockbusters1 <- blockbusters %>% filter(!is.na(mpaa_rating)) %>%
   rename(Film = 'film_title')
 
-plot6 <- ggplot(data = blockbusters1, aes(x = release_year, y = imdb_rating, colour = mpaa_rating,
+plot6 
+  
+ggplot(data = blockbusters1, aes(x = release_year, y = imdb_rating, colour = mpaa_rating,
                                           label = Film)) +
   geom_point() +
+  facet_wrap(~mpaa_rating) +
+  geom_smooth(se = FALSE, method = 'lm') +
   labs(y = "IMDB Rating",
        x = "Release Year",
        colour = "MPAA Rating",
        title = "Blockbuster Ratings: 1977 to 2019") +
   theme_hc() +
-  scale_colour_brewer(palette = "Dark2")
-
-ggplotly(plot6, tooltip = "label")
+  scale_colour_brewer(palette = "Dark2") +
+  theme(plot.title = element_text(family = "mono",
+                                  face = "italic",
+                                  margin = margin(t = 20, b = 20)),
+        axis.ticks = element_blank(),
+        axis.title = element_text(family = "mono",
+                                  face = "italic"),
+        axis.text = element_text(family = "mono"),
+        legend.box.background = element_rect(),
+        legend.text = element_text(family = "mono"),
+        legend.title = element_text(family = "mono",
+                                    face = "italic"),
+        axis.title.y = element_text(margin = margin(r = 20)),
+        axis.title.x = element_text(margin = margin(t = 20, b = 10)),
+        strip.text = element_text(family = "mono",
+                                  face = "bold"))
 ```
 
 ## Has the Budget for Blockbusters Increased Throughout Time? 
 ```{r}
 ggplot(data = blockbusters, aes(x = release_year, y = film_budget, colour = release_year)) +
   geom_point() +
-  geom_smooth(se = FALSE, method = "lm") +
+  geom_smooth(se = FALSE, method = "lm", colour = "black") +
   labs(x = "Release Year",
        y = "Film Budget",
-       title = "Has the Budget for Blockbusters Increased Throughout Time?",
-       subtitle = "Film Budget for Blockbuesters: 1977-2019") +
+       title = "Has the Budget for Blockbuster Films Increased Throughout Time?",
+       subtitle = "Film Budget for Blockbusters: 1977-2019") +
   theme_bw() +
   scale_colour_viridis_c() +
-  theme(legend.position = "none")
-
-ggplot(data = blockbusters, aes(x = release_year, y = film_budget)) +
-  geom_hex() +
-  geom_smooth(se = FALSE, method = "lm") +
-  labs(x = "Release Year",
-       y = "Film Budget", 
-       title = "Has the Budget for Blockbusters Increased Throughout Time?",
-       subtitle = "Film Budget for Blockbuesters: 1977-2019") +
-  theme_bw() 
+  theme(legend.position = "none",
+        plot.title = element_text(family = "mono",
+                                  face = "bold",
+                                  margin = margin(c(t = 50, b = 50)),
+                                  vjust = 10),
+        plot.subtitle = element_text(family = "mono",
+                                     face = "italic",
+                                     vjust = 5),
+        axis.title = element_text(family = "mono",
+                                  face = "bold"),
+        axis.text = element_text(family = "mono"),
+        axis.ticks = element_blank(),
+        axis.title.x = element_text(margin = margin(c(l = 20))),
+        axis.title.y = element_text(margin = margin(c(t = 20, b = 20, r = 20)))) 
+## need to add more to this visualization 
 ```
 
 ## Which American/Domestic Distributor Has Produced the Most Blockbusters 1977-2019
@@ -262,20 +328,31 @@ blockbusters3 <- blockbusters %>% group_by(domestic_distributor) %>%
   filter(!n == 1)
 
 ggplot(data = blockbusters3, aes(x = order, y = n, fill = order)) +
-  geom_col() +
+  geom_point() +
+  geom_segment(aes(x = order, xend = order, y = 0, yend = n)) +
   coord_flip() +
   geom_label(data = blockbusters3, aes(label = n), show.legend = FALSE) +
   labs(x = "Amount of Films Produced",
        y = "Domestic Distributor",
        title = "Amount of Blockbusters Produced by Domestic Distributors: 1977-2019") +
   theme_bw() +
-  theme(legend.position = "none")
+  theme(legend.position = "none",
+        plot.title = element_text(family = "mono",
+                                  face = "bold",
+                                  margin = margin(c(t = 50)),
+                                  vjust = 10),
+        axis.title = element_text(family = "mono",
+                                  face = "bold"),
+        axis.text = element_text(family = "mono"),
+        axis.text.y = element_text(face = "italic"),
+        axis.ticks = element_blank(),
+        axis.title.x = element_text(margin = margin(c(b = 20))),
+        axis.title.y = element_text(margin = margin(c(t = 30, r = 30))))
 ```
 
 ## Work in Progress 
 ```{r}
 blockbusters
-
 interest <- blockbusters %>% mutate(rank = rank(desc(imdb_rating))) %>%
   select(rank, everything()) %>%
   arrange(rank) %>%
@@ -293,9 +370,9 @@ interest2
 
 library(ggrepel)
 ggplot(data = interest, aes(x = release_year, y = domestic_gross)) +
-  geom_point() +
+  geom_point(aes(colour = imdb_rating)) +
   geom_label_repel(data = interest, aes(label = film_title)) +
-  geom_point(data = interest2, aes(x = release_year, y = domestic_gross)) +
+  geom_point(data = interest2, aes(x = release_year, y = domestic_gross, colour = imdb_rating)) +
   geom_label_repel(data = interest2, aes(label = film_title))
 ```
 
