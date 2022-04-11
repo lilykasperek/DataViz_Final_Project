@@ -81,3 +81,7 @@ I continued working with theme(), and now have a common font and theme in my pol
 ## April 6th After Class 
 
 Fixed the order of the y axis for my political donations visualization so it is ordered from most observed donations to least. Figured out how to change labels from scientific notation to monetary values. Decided to get rid of my interactive plots because they can not really be customized. Installed library(ggpmisc) and am trying to figure out how to use it to plot tables on my visualizations. Need to make more complex visualizations, add more data sets etc. 
+
+## April 11th Beginning of Class
+
+I worked on trying to figure out how to add a table to a plot but could not figure it out. I should be close to done with political donations visualizations after figuring out how to add a table to plots. I tried to follow along to actually create a blogdown with the instructions you sent a while back but got confused after activating my GitHub pages. I wasn’t sure how to run code in the terminal. I started thinking about/working on my written description a little bit. I made a few small tweaks to some visualizations. I looked for new data sets because I am not sure what visualizations to make with the data sets I have now. I found an interesting data set of Forbes Billionaires List from 2021. I am debating not using the blockbusters and history of rock data sets anymore. I tried to think of questions and created some simple visualizations for a little with the new data set.  
