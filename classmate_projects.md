@@ -21,3 +21,7 @@ Kasey is working on a shiny app for olympic data. She has many different tabs an
 ## April 6 
 
 Claire is working on a shiny app for trade deadlines for hockey. 
+
+## April 18 
+
+Jack is working on a shiny app to display Liberty League baseball data. 

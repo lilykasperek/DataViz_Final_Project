@@ -94,3 +94,7 @@ I added a title, changed the font, releveled factors in the legend, and renamed 
 
 Decided to scrap the history of rock and blockbusters data sets for now. The visualizations I had were underdeveloped and I was really struggling to come up with more. I also think that the Forbes Billionaires data set fits in better with the political donations data set. My goal will be to find another data set that fits in with these two so that I can have three pages on my blog down. I moved the work I did with the other two data sets into another markdown in case I want to go back to it. I added specific questions that are answered by my visualizations. I also added the average amount spent on political donations, and a table showing the sum of how much money the top donors spent on their donations. Added a table to accompany visualization displaying the count of donations per party. Created a lollipop chart for Forbes billionaires. Added labels with outliers for average billionaire age by country. Made a lollipop chart that has points/segments above and below the average USA billionaire's net worth for billionaires in the fashion/retail industry in the United States. Just continued playing around and making minor tweaks as well. 
 
+## April 18th After Class
+
+This class I worked on modifying theme components of my visualizations. I made a few changes and tried to come up with some new ideas so I can finish my Forbes Billionaires section and move on to the last data set I want to use. 
+
