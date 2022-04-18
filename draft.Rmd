@@ -35,11 +35,11 @@ pol_donations <- pol_donations %>% rename(year = 'Election Year') %>% mutate(amo
 
 library(plotly)
 options(scipen = 10)
-## install.packages("ggpmisc")
 library(ggpmisc)
+library(ggrepel)
 ```
 
-## Top 25 Highest Political Donations by NFL Team Owners in 2016 
+## Questions: What were the highest 25 Political Donations made by NFL team owners in 2016? Were the majority of these donations affiliated with a certain party? How much influence could NFL team owners have on elections? Is there any gender that dominates?
 ```{r, message = FALSE, warning = FALSE, echo = FALSE}
 high_donations <- pol_donations %>% filter(year == "2016" & League == "NFL") %>%
   mutate(amount = parse_number(Amount)) %>%
@@ -78,7 +78,7 @@ ggplot(data = high_donations, aes(x = amount, y = owner_ordered, label = Recipie
         legend.position = "bottom") 
 ```
 
-## Table of Owners Who Make the Most Donations
+## Questions: Which owners, across all leagues, have made the most political donations from this data set? How many have they made? Is there a certain gender that dominates? 
 ```{r}
 library(knitr)
 library(pander)
@@ -96,17 +96,30 @@ kable(owner_rank2, caption = "<b>Who Makes the Most Donations Across All Leagues
                 font_size = 9) 
 ```
 
-## How Much Do They Donate? 
+## Questions: How much money was spent for these donations? Do these donations tend to be made to the same party for each owner or do they vary? What is the total sum of the donations made by these individuals? What is the average amount per donation? 
 ```{r, message = FALSE, warning = FALSE, echo = FALSE}
 owner_rank <- pol_donations %>% group_by(Owner, League) %>%
   summarise(n = n()) %>%
   arrange(desc(n)) 
- 
+
 frequent <- pol_donations %>% group_by(Owner) %>%
   mutate(n = n()) %>%
   filter(n >= 65) %>%
   arrange(desc(n)) %>%
   mutate(donations = as.numeric(n))
+
+frequent %>% group_by(Party) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n))
+
+average_donation <- frequent %>% group_by(Owner) %>%
+  mutate(mean = mean(amount))
+average_donation 
+
+ggplot(data = frequent, aes(x = amount, y = level_order, label = Amount, colour = Party)) +
+  geom_point() +
+  geom_point(data = average_donation, aes(x = mean, colour = "Mean")) +
+  scale_colour_manual(values = c("Mean" = "Red"))
 
 level_order <- factor(frequent$Owner, level = c('Stephen M. Ross', 'Herbert Simon',
                                                 'Jerry Reinsdorf', 'Ken Kendrick',
@@ -123,6 +136,33 @@ ggplot(data = frequent, aes(x = amount, y = level_order, label = Amount, colour 
        x = " ",
        colour = "Party") +
   scale_colour_brewer(palette = "Dark2") +
+    theme_bw() +
+  theme(legend.position = "bottom",
+        plot.title = element_text(family = "mono",
+                                  face = "bold",
+                                  size = 12),
+        axis.text.x = element_text(family = "mono"),
+        axis.text.y = element_text(family = "mono"),
+        legend.title = element_text(family = "mono", 
+                                    face = "bold",
+                                    size = 5),
+        legend.text = element_text(family = "mono",
+                                   size = 5),
+        plot.subtitle = element_text(family = "mono",
+                                     face = "italic",
+                                     size = 9),
+        legend.box.background = element_rect())
+
+ggplot(data = frequent, aes(x = amount, y = level_order, label = Amount, colour = Party)) +
+  geom_point() +
+  geom_point(data = average_donation, aes(x = mean, colour = "Mean Donations")) +
+  labs(title = "How Many Donations Have They Made?",
+       subtitle = "Examining The Monetary Amount of Observed Political Donations",
+       y = " ",
+       x = " ",
+       colour = "Party") +
+  scale_colour_brewer(palette = "Dark2") +
+  scale_colour_manual(values = c("Mean Donations" = "red")) +
     theme_bw() +
   theme(legend.position = "bottom",
         plot.title = element_text(family = "mono",
@@ -144,29 +184,81 @@ ggplot(data = frequent, aes(x = amount, y = level_order, label = Amount, colour 
                                      vjust = 5),
         legend.box.just = "left",
         legend.box.background = element_rect())
+
+ggplot(data = frequent, aes(x = amount, y = level_order, label = Amount, colour = Party)) +
+  geom_point() +
+  geom_point(data = average_donation, aes(x = mean, colour = "Mean Donations")) +
+  labs(title = "How Many Donations Have They Made?",
+       subtitle = "Examining The Monetary Amount of Observed Political Donations",
+       y = " ",
+       x = " ",
+       colour = "Party") +
+  scale_colour_viridis_d() +
+    theme_bw() +
+  theme(legend.position = "bottom",
+        plot.title = element_text(family = "mono",
+                                  face = "bold",
+                                  size = 12,
+                                  margin = margin(c(t = 50,
+                                                    b = 50)),
+                                  vjust = 10),
+        axis.text.x = element_text(family = "mono"),
+        axis.text.y = element_text(family = "mono"),
+        legend.title = element_text(family = "mono", 
+                                    face = "bold",
+                                    size = 7),
+        legend.text = element_text(family = "mono",
+                                   size = 6),
+        plot.subtitle = element_text(family = "mono",
+                                     face = "italic",
+                                     size = 9,
+                                     vjust = 5),
+        legend.box.just = "left",
+        legend.box.background = element_rect()) 
+
+
+  scale_fill_discrete(limits = c("Republican", "Democrat", 
+                                      "Bipartisan, but mostly Republican", 
+                                      "Bipartisan", "N/A",
+                                      "Bipartisan, but mostly Democratic",
+                                      "Independent", 
+                                      "Mean Donations"))
+
+frequent %>% mutate(party = fct_relevel(Party, c("Republican", "Democrat", 
+                                      "Bipartisan, but mostly Republican", 
+                                      "Bipartisan", "N/A",
+                                      "Bipartisan, but mostly Democratic",
+                                      "Independent", 
+                                      "Mean Donations")))
+
+sum_donations <- frequent %>% group_by(Owner) %>%
+  summarise(sum = sum(amount)) %>%
+  rename(Sum = 'sum') %>%
+  arrange(desc(Sum))
+sum_donations
+
+pandoc.table(sum_donations, style = "grid")
 ```
 
-## Examining Top Donator 
+## Questions: How many donations, out of the 213 made by Charles Johnson, were made to which political parties? 
 ```{r}
 library(ggthemes)
 charles_johnson <- pol_donations %>% filter(Owner == "Charles Johnson") %>%
   filter(year == 2016 | year == 2018 | year == 2020) 
 
-cj_party <- charles_johnson %>% group_by(Party) %>%
+ cj_party <- charles_johnson %>% group_by(Party) %>%
   summarise(n = n()) %>%
   mutate(party = fct_reorder(.f = Party, .x = n)) %>%
-   mutate(Party = fct_relevel(party, c("Republican", "Bipartisan, but mostly Republican",
-                                         "Democrat")))
+   mutate(Party = fct_relevel(party, c("Democrat", "Bipartisan, but mostly Republican", "Republican")))
 
-level_order2 <- factor(charles_johnson$Party, level = c('Republican', 'Democrat', 'Bipartisan, but mostly Republican'))
+level_order2 <- factor(charles_johnson$Party, level = c('Democrat', 'Bipartisan, but mostly Republican', 'Republican'))
 
 ggplot(data = cj_party, aes(x = party, y = n, fill = Party)) +
   geom_col() +
-  coord_flip() +
-  scale_fill_viridis_d(option = "plasma") +
+  scale_fill_viridis_d(option = "inferno") +
   labs(title = "Party Affiliation of Political Donations Made by Charles Johnson",
        x = " ",
-       y = "Count of Donations") +
+       y = " ") +
   theme(legend.position = "bottom",
         plot.title = element_text(family = "mono",
                                   face = "bold",
@@ -184,17 +276,17 @@ ggplot(data = cj_party, aes(x = party, y = n, fill = Party)) +
         axis.title.x = element_text(family = "mono",
                                     size = 9,
                                     face = "italic",
-                                    margin = margin(t = 20)))
+                                    margin = margin(t = 20)),
+        axis.title.y = element_text(family = "mono",
+                                    margin = margin(t = 20, b = 20, r = 20)))
 
-cj_party2 <- cj_party %>% select(n, party)
-
-ggplot(data = cj_party, aes(x = party, y = n, fill = Party)) +
-  geom_col() + 
-  annotate(geom = "table") +
-  coord_flip()
+table_cjparty <- cj_party %>% arrange(desc(n)) %>%
+  select(Party, n) %>%
+  rename(Count = 'n')
+pandoc.table(table_cjparty)
 ```
 
-## What Are Some of These Organizations? 
+## Question: As we can see, most of the donations made by Charles Johnson were affiliated with the Republican party. What were some of these organizations and how many donations did Charles Johnson make to each of these organizations? 
 ```{r}
 organizations <- charles_johnson %>% group_by(Recipient, Party) %>%
   summarise(n = n()) %>%
@@ -208,7 +300,7 @@ kable(organizations, caption = "<b>What Are Some Organizations Charles Johnson D
   scroll_box(height = "500px")
 ```
 
-## Organizations Receiving Most Donations Across All Leagues 
+## Questions: What are some organizations that seem to be recieving the most donations across all owners and leagues? What political party are these organizations affiliated with? 
 ```{r}
 recipients <- pol_donations %>% group_by(Recipient, Party) %>%
   summarise(n = n()) %>%
@@ -256,21 +348,14 @@ pol_donations %>% group_by(League) %>%
 
 ## Forbes Billionaires 2021
 
-## Potential questions:
-## Who are the most recent top 10 billionaires: name v net worth ? 
-
-## look at average age of billionaires in general/maybe by country?: do billionaires tend to be very old or are there more billionaires on the younger side?
-
-## Look at most prevalent industry of billionaires: mostly technology or something else? 
-
-## How many billionaires in each country: mostly capitalist or other economic systems? 
-
 ## Average networth of billionaires by industry? 
 
-## Top 10 Billionaires coloured by industry (Forbes 2021 Billionaires)
+## Questions: Who were the billionaires with the top 10 highest net worths on the 2021 Forbes Billionaires List? How much are their net worths? What industry do they work in? Does any industry dominate the others? 
 ```{r}
 billionaires <- read_csv("data/Billionaire.csv")
 billionaires
+forbes_billionaires <- read_csv("data/forbes_billionaires.csv")
+forbes_billionaires 
 
 top10 <- billionaires %>% filter(Rank <= 10) %>%
   mutate(NetWorth = parse_number(NetWorth)) %>%
@@ -310,16 +395,8 @@ ggplot(data = top10, aes(x = order, y = NetWorth, fill = Industry)) +
                                     face = "italic"))
 ```
 
-## Forbes Billionaire 2021 2.0 Data Set
+## Questions: What is the average age of the billionaires from the 10 countries with the most billionaires? Is there a pattern or do the averages widely differ? Are there any interesting outliers? 
 ```{r}
-forbes_billionaires <- read_csv("data/forbes_billionaires.csv")
-forbes_billionaires 
-
-country <- forbes_billionaires %>% group_by(Country) %>%
-  summarise(n = n()) %>%
-  arrange(desc(n))
-country
-
 forbes_billionaires_age <- forbes_billionaires %>%
   mutate(age = as.numeric(Age)) %>%
   select(age, everything())
@@ -334,21 +411,26 @@ countries_10 <- forbes_billionaires_age %>% filter(Country == "United States" |
            Country == "Canada" |
            Country == "United Kingdom" |
            Country == "Italy") 
+countries_10
 
 ggplot(data = countries_10, aes(x = Country, y = age)) +
   geom_point() +
   coord_flip() 
 
-check <- countries_10 %>% filter(Age < 25 | Age > 90)
+check <- countries_10 %>% filter(age < 25 | age > 97)
+check
 
 filter <- countries_10 %>% filter(!is.na(age))
+filter
 filter2 <- filter %>% group_by(Country) %>%
-  summarise(Average = mean(age))
+  summarise(Average = mean(age)) %>%
+  mutate(order = fct_reorder(.f = Country, .x = Average))
+filter2
 
 ggplot(data = countries_10, aes(x = Country, y = age)) +
-  geom_point(alpha = 0.2) +
+  geom_point(alpha = 0.4) +
   coord_flip() +
-  geom_point(data = filter2, aes(y = Average, colour = "Mean Age"),
+  geom_point(data = filter2, aes(x = order, y = Average, colour = "Mean Age"),
              size = 2.5) +
   scale_colour_manual(values = c("Mean Age" = "red")) +
   labs(x = "Country", 
@@ -368,7 +450,70 @@ ggplot(data = countries_10, aes(x = Country, y = age)) +
         legend.position = "none",
         plot.caption = element_text(family = "mono",
                                     size = 9,
-                                    face = "italic")) 
+                                    face = "italic")) +
+  geom_label_repel(data = check, aes(label = age, family = "mono"))
+```
+
+## Average net worth per industry 
+```{r}
+forbes_billionaires %>% group_by(Country) %>%
+  summarise(avg = mean(NetWorth))
+
+usa_df <- billionaires %>% filter(Country == "United States") %>% mutate(networth = parse_number(NetWorth)) 
+usa_df
+
+usa_df %>% group_by(Industry) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n))
+
+usa_avg_df <- usa_df %>%
+   summarise(avg = mean(networth))
+usa_avg_df
+
+above_or_below_us <- usa_df %>% mutate(avg = mean(networth)) %>%
+  mutate(above_avg = if_else(networth > 6.08,
+                                      true = "ABOVE AVG",
+                                      false = "BELOW AVG")) %>%
+  filter(Industry == "Fashion & Retail") %>%
+  mutate(order = fct_reorder(.f = Name, .x = networth))
+above_or_below_us 
+
+ggplot(data = above_or_below_us, aes(x = order, y = networth, colour = above_avg)) +
+  geom_segment(aes(x = order, xend = order, y = avg, yend = networth)) +
+  geom_point() +
+  coord_flip() +
+  labs(x = "Name",
+      y = "Net Worth",
+      colour = "Average") +
+  theme(axis.text = element_text(family = "mono"),
+        axis.title = element_text(family = "mono"),
+        legend.text = element_text(family = "mono"),
+        legend.title = element_text(family = "mono"),
+        axis.ticks = element_blank())
+```
+
+## Questions: How many billionaires are there from the top 30 countries on the list? Do developed democracies have the most billionaires on the list?
+```{r}
+country <- forbes_billionaires %>% group_by(Country) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n)) 
+
+country_30 <- country %>% slice(1:30) %>%
+  mutate(order = fct_reorder(.f = Country, .x = n))
+country_30
+
+ggplot(data = country_30, aes(x = order, y = n)) +
+  geom_point(colour = "orange") +
+  geom_segment(aes(x = order, xend = order, y = 0, yend = n), colour = "blue", linetype = "dotdash") +
+  coord_flip() +
+  theme_light() +
+  theme(axis.ticks.x = element_blank()) +
+  labs(x = "Country", 
+       y = "Count of Billionaires",
+       title = "How Many Billionaires Are There From the Top 30 Countries?") +
+  theme(plot.title = element_text(family = "mono"),
+        axis.text = element_text(family = "mono"),
+        axis.title = element_text(family = "mono"))
 ```
 
 ## Playing Around with New Variables 
@@ -416,7 +561,13 @@ tidy_education2 <- tidy_education %>% filter(Degree == "Bachelor of Arts/Science
                           Degree == "Bachelor of Arts/Economic")
 
 ggplot(data = tidy_education2, aes(x = Degree, y = NetWorth)) +
-  geom_point() +
+  geom_point(alpha = 0.4) +
+  coord_flip() +
+  labs(x = "Education Level",
+       y = "Net Worth")
+
+ggplot(data = tidy_education2, aes(x = Degree, y = NetWorth)) +
+  geom_jitter(alpha = 0.4) +
   coord_flip() +
   labs(x = "Education Level",
        y = "Net Worth")
@@ -428,221 +579,3 @@ forbes_billionaires_geo <- read_csv("data/forbes_billionaires_geo.csv")
 forbes_billionaires_geo 
 ```
 
-## Billionaires Age in Countries with most billionaires 
-```{r}
-
-ggplot(data = countries_10, aes(x = Country, y = Age)) +
-  geom_point() +
-  coord_flip() +
-  geom_point(data = average_top10_countries, aes(y = Average, colour = "Average Billionaire Age")) +
-  scale_colour_manual(values = c("Average Billionaire Age" = "red"))
-```
-
-## Blockbusters: A blockbuster is a Hollywood movie that's made with a large budget and big stars. A true blockbuster is extremely popular and brings in a lot of money (https://www.vocabulary.com/dictionary/blockbuster). 
-```{r, message = FALSE, warning = FALSE, echo = FALSE}
-blockbusters <- read_csv("/Users/lilykasperek/Desktop/my-website/content/post/2022-03-22-first-post/Blockbusters_2019-1977.csv")
-blockbusters
-```
-
-## Blockbuster Ratings: 1977 to 2019
-```{r, message = FALSE, warning = FALSE, echo = FALSE}
-blockbusters %>% group_by(mpaa_rating) %>%
-  summarise(n = n()) 
-
-blockbusters1 <- blockbusters %>% filter(!is.na(mpaa_rating)) %>%
-  rename(Film = 'film_title')
-  
-ggplot(data = blockbusters1, aes(x = release_year, y = imdb_rating, colour = mpaa_rating,
-                                          label = Film)) +
-  geom_point() +
-  facet_wrap(~mpaa_rating) +
-  geom_smooth(se = FALSE, method = 'lm') +
-  labs(y = "IMDB Rating",
-       x = "Release Year",
-       colour = "MPAA Rating",
-       title = "Blockbuster Ratings: 1977 to 2019") +
-  theme_hc() +
-  scale_colour_brewer(palette = "Dark2") +
-  theme(plot.title = element_text(family = "mono",
-                                  face = "italic",
-                                  margin = margin(t = 20, b = 20)),
-        axis.ticks = element_blank(),
-        axis.title = element_text(family = "mono",
-                                  face = "italic"),
-        axis.text = element_text(family = "mono"),
-        legend.box.background = element_rect(),
-        legend.text = element_text(family = "mono"),
-        legend.title = element_text(family = "mono",
-                                    face = "italic"),
-        axis.title.y = element_text(margin = margin(r = 20)),
-        axis.title.x = element_text(margin = margin(t = 20, b = 10)),
-        strip.text = element_text(family = "mono",
-                                  face = "bold"))
-
-blockbusters %>% group_by(mpaa_rating) %>%
-  summarise(n = n()) %>%
-  filter(!is.na(mpaa_rating))
-```
-
-## Has the Budget for Blockbusters Increased Throughout Time? 
-```{r}
-ggplot(data = blockbusters, aes(x = release_year, y = film_budget, colour = release_year)) +
-  geom_point() +
-  geom_smooth(se = FALSE, method = "lm", colour = "black") +
-  labs(x = "Release Year",
-       y = "Film Budget",
-       title = "Has the Budget for Blockbuster Films Increased Throughout Time?",
-       subtitle = "Film Budget for Blockbusters: 1977-2019") +
-  theme_bw() +
-  scale_colour_viridis_c() +
-  theme(legend.position = "none",
-        plot.title = element_text(family = "mono",
-                                  face = "bold",
-                                  margin = margin(c(t = 50, b = 50)),
-                                  vjust = 10),
-        plot.subtitle = element_text(family = "mono",
-                                     face = "italic",
-                                     vjust = 5),
-        axis.title = element_text(family = "mono",
-                                  face = "bold"),
-        axis.text = element_text(family = "mono"),
-        axis.ticks = element_blank(),
-        axis.title.x = element_text(margin = margin(c(l = 20))),
-        axis.title.y = element_text(margin = margin(c(t = 20, b = 20, r = 20)))) 
-## need to add more to this visualization 
-```
-
-## Which American/Domestic Distributor Has Produced the Most Blockbusters 1977-2019
-```{r}
-blockbusters3 <- blockbusters %>% group_by(domestic_distributor) %>%
-  summarise(n = n()) %>%
-  arrange(desc(n)) %>%
-  mutate(order = fct_reorder(.f = domestic_distributor, .x = n)) %>%
-  filter(!n == 1)
-
-ggplot(data = blockbusters3, aes(x = order, y = n, fill = order)) +
-  geom_point() +
-  geom_segment(aes(x = order, xend = order, y = 0, yend = n)) +
-  coord_flip() +
-  geom_label(data = blockbusters3, aes(label = n), show.legend = FALSE) +
-  labs(x = "Amount of Films Produced",
-       y = "Domestic Distributor",
-       title = "Amount of Blockbusters Produced by Domestic Distributors: 1977-2019") +
-  theme_bw() +
-  theme(legend.position = "none",
-        plot.title = element_text(family = "mono",
-                                  face = "bold",
-                                  margin = margin(c(t = 50)),
-                                  vjust = 10),
-        axis.title = element_text(family = "mono",
-                                  face = "bold"),
-        axis.text = element_text(family = "mono"),
-        axis.text.y = element_text(face = "italic"),
-        axis.ticks = element_blank(),
-        axis.title.x = element_text(margin = margin(c(b = 20))),
-        axis.title.y = element_text(margin = margin(c(t = 30, r = 30))))
-```
-
-## Work in Progress 
-```{r}
-blockbusters
-interest <- blockbusters %>% mutate(rank = rank(desc(imdb_rating))) %>%
-  select(rank, everything()) %>%
-  arrange(rank) %>%
-  slice(1:5) %>%
-  mutate(film_title = fct_recode(film_title, 
-                                 LOTR_The_Return_Of_The_King = "The Lord of the Rings: The Return of the King",
-                                 LOTR_Fellowship_Of_The_Ring = "The Lord of the Rings: The Fellowship of the Ring"))
-interest 
-
-interest2 <- blockbusters %>% mutate(rank = rank(imdb_rating)) %>%
-  select(rank, everything()) %>%
-  arrange(rank) %>%
-  slice(1:5)
-interest2
-
-library(ggrepel)
-ggplot(data = interest, aes(x = release_year, y = domestic_gross)) +
-  geom_point(aes(colour = imdb_rating)) +
-  geom_label_repel(data = interest, aes(label = film_title)) +
-  geom_point(data = interest2, aes(x = release_year, y = domestic_gross, colour = imdb_rating)) +
-  geom_label_repel(data = interest2, aes(label = film_title))
-```
-
-## History of Rock
-```{r, message = FALSE, warning = FALSE, echo = FALSE}
-library(tidyverse)
-history_of_rock <- read_csv("/Users/lilykasperek/Desktop/my-website/content/post/2022-03-22-first-post/history-of-rock-spotify.csv")
-history_of_rock
-```
-
-## Most Popular Nirvana Songs 
-```{r}
-history_of_rock %>% group_by(artist) %>%
-  summarise(n = n()) %>% arrange(desc(n)) 
-
-nirvana <- history_of_rock %>% rename(Popularity = 'popularity') %>%
-  filter(artist == "Nirvana") %>% arrange(desc(Popularity)) %>%
-  mutate(order = fct_reorder(.f = name, .x = Popularity)) %>%
-  rename(Release_Date = 'release_date')
-
-nirvana %>% select(order, everything())
-
-plot3 <- ggplot(data = nirvana, aes(x = order, y = Popularity, label = Popularity, colour = Popularity)) +
-  geom_point() +
-  geom_segment(aes(x = order, xend = order, y = 0, yend = Popularity)) +
-  coord_flip() +
-  labs(title = "Most Popular Nirvana Songs: 1991-2018",
-       colour = "Popularity", 
-       x = " ",
-       y = " ") +
-  theme_bw() +
-  scale_colour_viridis_b() +
-  theme(legend.position = "none")
-
-ggplotly(plot3, tooltip = "label")
-```
-
-## Trying to Make Density Ridges Plot 
-```{r}
-## install.packages("ggridges")
-library(ggridges)
-
-nirvana_small <- nirvana %>% slice(1:5) %>%
-  mutate(order = fct_reorder(.f = name, .x = valence))
-ggplot(data = nirvana_small, aes(x = order, y = valence)) +
-  geom_density_ridges() +
-  coord_flip() +
-  labs(x = "Title",
-       y = "Valence")
-```
-
-## Works in Progress - Simple Visualizations
-```{r}
-nirvana_line <- nirvana %>% rename(Title = 'name')
-plot10 <- ggplot(data = nirvana_line, aes(x = Release_Date, y = Popularity, label = Title)) +
-  geom_line() +
-  geom_point(colour = "darkolivegreen") +
-  labs(x = "Release Date",
-       y = "Popularity",
-       title = "Comparing Popularity by Release Date") +
-  theme_bw() +
-  theme(legend.position = "none")
-
-ggplotly(plot10, tooltip = "label")
-
-table <- history_of_rock %>% group_by(artist) %>%
-  summarise(mean = mean(popularity)) %>%
-  arrange(desc(mean)) %>%
-  slice(1:10)
-
-top10 <- history_of_rock %>% arrange(desc(popularity)) %>% slice(1:10)
-```
-
-## Unemployment Data Set
-```{r}
-library(lubridate)
-unemployment <- read_csv("data/unemployment_data_us.csv")
-ggplot(data = unemployment, aes(x = Date, y = Professional_Degree)) +
-  geom_point()
-```
