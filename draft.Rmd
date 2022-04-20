@@ -394,7 +394,6 @@ ggplot(data = top10, aes(x = order, y = NetWorth, fill = Industry)) +
        title = "2021 Forbes Billionaires with the Highest Net Worth") +
   scale_fill_viridis_d() +
   scale_x_discrete(labels = new_names2) +
-  theme(legend.position = "bottom") +
   theme(axis.title = element_text(family = "mono",
                                   face = "bold",
                                   margin = margin(c(t = 30,
@@ -406,17 +405,20 @@ ggplot(data = top10, aes(x = order, y = NetWorth, fill = Industry)) +
                                   face = "bold",
                                   margin = margin(c(t = 15,
                                                     b = 15,
-                                                    vjust = 15))),
+                                                    vjust = 15)),
+                                  size = 15),
         axis.title.x = element_text(vjust = -3),
         axis.title.y = element_text(vjust = 2),
         legend.margin = margin(c(t = 30, b = 30)),
         legend.title = element_text(family = "mono",
-                                    face = "bold"),
+                                    face = "bold",
+                                    size = 8),
         legend.text = element_text(family = "mono",
-                                   face = "italic"),
+                                   face = "italic",
+                                   size = 8),
         plot.caption = element_text(family = "mono",
                                     face = "italic",
-                                    vjust = 35,
+                                    vjust = 5,
                                     hjust = 0.5,
                                     margin = margin(c(t = 30,
                                                       b = 30))),
@@ -476,16 +478,20 @@ ggplot(data = countries_10, aes(x = Country, y = age)) +
                                    face = "italic"), 
         plot.caption = element_text(family = "mono",
                                     size = 9,
-                                    face = "italic")) 
+                                    face = "italic"),
+  legend.box.background = element_rect())
 ```
 
 ## Outliers labeled 
 ```{r}
+ 
+countries10_2 <- countries_10 %>% mutate()
+
 ggplot(data = countries_10, aes(x = Country, y = age)) +
-  geom_point(alpha = 0.4) +
+  geom_point(alpha = 0.4, size = 1.5) +
   coord_flip() +
   geom_point(data = filter2, aes(x = order, y = Average, colour = "Mean Age of Billionaires"),
-             size = 2.5) +
+             size = 2.5, shape = 8) +
   scale_colour_manual(values = c("Mean Age of Billionaires" = "red")) +
   labs(x = "Country", 
        y = "Age",
@@ -503,7 +509,10 @@ ggplot(data = countries_10, aes(x = Country, y = age)) +
         plot.caption = element_text(family = "mono",
                                     size = 9,
                                     face = "italic")) +
-  geom_label_repel(data = check, aes(label = age))
+  theme(legend.position = "none") +
+  geom_label_repel(data = check, aes(label = age)) +
+  geom_text_repel(data = check, aes(label = Name, fontface = "bold"), size = 2) +
+  geom_text_repel(data = check, aes(label = Source))
 ```
 
 ## Average labeled 
@@ -574,12 +583,15 @@ ggplot(data = above_or_below_us, aes(x = order, y = networth, colour = above_avg
         plot.caption = element_text(family = "mono",
                                     hjust = 0.5),
         plot.title = element_text(family = "mono",
-                                  face = "bold"),
+                                  face = "bold",
+                                  margin = margin(c(t = 10, b = 10))),
         plot.subtitle = element_text(family = "mono",
-                                     face = "italic"),
-        axis.title.x = element_text(face = "bold"),
-        axis.text.y = element_text(face = "italic",
-                                   vjust = 1),
+                                     face = "italic",
+                                     margin = margin(c(t = 10, b = 10)),
+                                     vjust = 2),
+        axis.title.x = element_text(face = "bold",
+                                    margin = margin(c(t = 10, b = 10))),
+        axis.text.y = element_text(face = "italic"),
         axis.ticks = element_blank(),
         legend.box.background = element_rect()) 
 ```
@@ -600,12 +612,13 @@ ggplot(data = country_30, aes(x = order, y = n)) +
   coord_flip() +
   theme_light() +
   theme(axis.ticks.x = element_blank()) +
-  labs(x = "Country", 
-       y = "Count of Billionaires",
+  labs(x = " ", 
+       y = " ",
        title = "How Many Billionaires Are There From the Top 30 Countries?") +
   theme(plot.title = element_text(family = "mono"),
         axis.text = element_text(family = "mono"),
-        axis.title = element_text(family = "mono"))
+        axis.title = element_text(family = "mono")) +
+  geom_text(aes(label = n, fontface = "bold", family = "mono"), hjust = -0.1, size = 3.2, colour = "black")
 
 ggplot(data = country_30, aes(x = order, y = n, fill = n)) +
   geom_col(colour = "black") +
@@ -618,15 +631,41 @@ ggplot(data = country_30, aes(x = order, y = n, fill = n)) +
                                   face = "bold"),
         axis.text = element_text(family = "mono"),
         axis.title = element_text(family = "mono"),
-        legend.title = element_text(family = "mono",
-                                    face = "bold"),
-        legend.text = element_text(family = "mono",
-                                   face = "italic"),
-        axis.ticks = element_blank()) +
-  scale_fill_viridis_b(n.breaks = 7) 
+        legend.title = element_text(family = "mono"),
+        legend.text = element_text(family = "mono"),
+        axis.ticks = element_blank(),
+        legend.position = "none") +
+  scale_fill_viridis_b(n.breaks = 6) +
+  geom_text(aes(label = n, fontface = "bold", family = "mono"), hjust = -0.1, size = 3, colour = "black")
 ```
 
-## Playing Around with New Variables - looking at self made billionaires, education level of billionaires 
+## usa billionaires
+```{r}
+library(plotly)
+us_forbes_billionaires <- combined_billionaires %>% filter(Country.x == "United States")
+us_forbes_billionaires
+
+us_forbes_billionaires %>% group_by(Industry) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n))
+
+plot10 <- ggplot(data = us_forbes_billionaires, aes(x = NetWorth.x, y = Age.x,
+                                                    label = Name, colour = Industry)) +
+  geom_jitter() +
+  labs(x = "NetWorth",
+       y = "Age",
+       title = "Billionaires in the U.S.") +
+  theme(plot.title = element_text(face = "bold",
+                                  size = 15,
+                                  margin = margin(c(t = 10, b = 10))),
+        axis.ticks = element_blank(),
+        legend.title = element_text(face = "bold"),
+        axis.title = element_text(face = "bold"))
+
+ggplotly(plot10, tooltip = "label")
+```
+
+## How many are self-made (from entire list) ? 
 ```{r}
 forbes_billionaires %>% select(Self_made, everything())
 self_made <- forbes_billionaires %>% group_by(Self_made) %>%
@@ -679,8 +718,7 @@ harvard %>% group_by(Industry) %>%
 
 ggplot(data = harvard, aes(x = Degree, y = NetWorth.x)) +
   geom_point() +
-  coord_flip() +
-  geom_label(data = harvard, aes(label = Name))
+  coord_flip() 
 
 ## should do something with this to show the degree, self_made, networth, etc. 
 
@@ -691,7 +729,6 @@ ggplot(data = usa_billionaires, aes(x = Self_made)) +
 forbes_billionaires %>% group_by(Status) %>%
   summarise(n = n()) %>%
   arrange(desc(n))
-
 
 tidy_education <- forbes_billionaires %>% 
   separate(col = Education, into = c("Degree", "University"),
@@ -743,5 +780,4 @@ ggplot(data = tidy_education2, aes(x = Degree, y = NetWorth)) +
 ```{r}
 
 ```
-
 

@@ -103,4 +103,7 @@ This class I worked on modifying theme components of my visualizations. I made a
 Fixed space between subtitle and caption and legend for the first Forbes visualization. 
 Worked on making the visualizations “prettier." Changed final lollipop visualization to a bar chart since it is visualizing counts of categorical data. Made visualization showing how many are self_made and how many are not. Kept working on ideas to represent the education/some other variable of Forbes billionaires to make another visualization but after that should be done with this section for now. Tried to find another data set but couldn’t find one. Need to keep looking for last section. 
 
+## April 20th After Class 
+
+Today I kept working on improving the visualizations I had and made several new visualizations as well. My next step is finding another data set and working extensively with that data set. 
 

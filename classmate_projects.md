@@ -25,3 +25,7 @@ Claire is working on a shiny app for trade deadlines for hockey.
 ## April 18 
 
 Jack is working on a shiny app to display Liberty League baseball data. 
+
+## April 20th 
+
+James is working on cleaning up his tennis data for his shiny app. 
