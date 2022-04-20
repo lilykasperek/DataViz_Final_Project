@@ -98,3 +98,9 @@ Decided to scrap the history of rock and blockbusters data sets for now. The vis
 
 This class I worked on modifying theme components of my visualizations. I made a few changes and tried to come up with some new ideas so I can finish my Forbes Billionaires section and move on to the last data set I want to use. 
 
+## April 20th Before Class 
+
+Fixed space between subtitle and caption and legend for the first Forbes visualization. 
+Worked on making the visualizations “prettier." Changed final lollipop visualization to a bar chart since it is visualizing counts of categorical data. Made visualization showing how many are self_made and how many are not. Kept working on ideas to represent the education/some other variable of Forbes billionaires to make another visualization but after that should be done with this section for now. Tried to find another data set but couldn’t find one. Need to keep looking for last section. 
+
+
