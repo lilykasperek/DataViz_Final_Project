@@ -50,7 +50,7 @@ high_donations <- pol_donations %>% filter(year == "2016" & League == "NFL") %>%
   mutate(party = fct_relevel(Party, c("Republican", "Democrat", "Bipartisan")))
 
 ggplot(data = high_donations, aes(x = amount, y = owner_ordered, label = Recipient, colour = party)) +
-  geom_point(size = 2) +
+  geom_point(size = 3) +
   labs(x = " ", 
        y = " ",
        title = "How Much Did NFL Owners Donate in 2016?",
@@ -60,13 +60,14 @@ ggplot(data = high_donations, aes(x = amount, y = owner_ordered, label = Recipie
   theme_bw() +
   theme(plot.title = element_text(family = "mono",
                                   face = "bold",
-                                  size = 15,
+                                  size = 18,
                                   margin = margin(c(t = 20,
                                                     b = 50,
-                                                    vjust = 10))),
+                                                    vjust = 15))),
         plot.subtitle = element_text(family = "mono",
                                      face = "italic",
-                                     size = 10),
+                                     size = 15,
+                                     vjust = 2.5),
         legend.title = element_text(family = "mono",
                                     face = "bold",
                                     size = 8),
@@ -75,8 +76,10 @@ ggplot(data = high_donations, aes(x = amount, y = owner_ordered, label = Recipie
         axis.text = element_text(family = "mono",
                                  size = 8),
         axis.text.x = element_text(face = "bold"),
+        axis.text.y = element_text(face = "bold"),
         legend.box.background = element_rect(),
         axis.ticks = element_blank(),
+        legend.key.size = unit(1.3, 'cm'),
         legend.position = "bottom") 
 ```
 
@@ -142,106 +145,29 @@ ggplot(data = frequent, aes(x = amount, y = level_order, label = Amount, colour 
   theme(legend.position = "bottom",
         plot.title = element_text(family = "mono",
                                   face = "bold",
-                                  size = 12),
-        axis.text.x = element_text(family = "mono"),
-        axis.text.y = element_text(family = "mono"),
+                                  size = 18,
+                                   margin = margin(c(t = 20,
+                                                    b = 50,
+                                                    vjust = 15))),
+        axis.text.x = element_text(family = "mono",
+                                   face = "bold"),
+        axis.text.y = element_text(family = "mono",
+                                   face = "bold"),
         legend.title = element_text(family = "mono", 
                                     face = "bold",
-                                    size = 8),
+                                    size = 10),
         legend.text = element_text(family = "mono",
                                    size = 8),
         plot.subtitle = element_text(family = "mono",
                                      face = "italic",
-                                     size = 9),
+                                     size = 15,
+                                     vjust = 2.5),
         axis.ticks = element_blank(),
+        legend.key.size = unit(0.8, 'cm'),
         legend.box.background = element_rect())
 ```
 
-## Only average - no political party 
-``` {r}
-ggplot(data = frequent, aes(x = amount, y = level_order, label = Amount, colour = Party)) +
-  geom_point() +
-  geom_point(data = average_donation, aes(x = mean, colour = "Mean Donations")) +
-  labs(title = "How Many Donations Have They Made?",
-       subtitle = "Examining The Monetary Amount of Observed Political Donations",
-       y = " ",
-       x = " ",
-       colour = "Party") +
-  scale_colour_brewer(palette = "Dark2") +
-  scale_colour_manual(values = c("Mean Donations" = "red")) +
-    theme_bw() +
-  theme(legend.position = "bottom",
-        plot.title = element_text(family = "mono",
-                                  face = "bold",
-                                  size = 12,
-                                  margin = margin(c(t = 50,
-                                                    b = 50)),
-                                  vjust = 10),
-        axis.text.x = element_text(family = "mono"),
-        axis.text.y = element_text(family = "mono"),
-        legend.title = element_text(family = "mono", 
-                                    face = "bold",
-                                    size = 7),
-        legend.text = element_text(family = "mono",
-                                   size = 6),
-        plot.subtitle = element_text(family = "mono",
-                                     face = "italic",
-                                     size = 9,
-                                     vjust = 5),
-        legend.box.just = "left",
-        legend.box.background = element_rect())
-```
-
-## With average but no way to distinguish
-```{r}
-ggplot(data = frequent, aes(x = amount, y = level_order, label = Amount, colour = Party)) +
-  geom_point() +
-  geom_point(data = average_donation, aes(x = mean, colour = "Mean Donations"))+
-  labs(title = "How Many Donations Have They Made?",
-       subtitle = "Examining The Monetary Amount of Observed Political Donations",
-       y = " ",
-       x = " ",
-       colour = "Party") +
-  scale_colour_viridis_d() +
-    theme_bw() +
-  theme(legend.position = "bottom",
-        plot.title = element_text(family = "mono",
-                                  face = "bold",
-                                  size = 12,
-                                  margin = margin(c(t = 50,
-                                                    b = 50)),
-                                  vjust = 10),
-        axis.text.x = element_text(family = "mono"),
-        axis.text.y = element_text(family = "mono"),
-        legend.title = element_text(family = "mono", 
-                                    face = "bold",
-                                    size = 7),
-        legend.text = element_text(family = "mono",
-                                   size = 6),
-        plot.subtitle = element_text(family = "mono",
-                                     face = "italic",
-                                     size = 9,
-                                     vjust = 5),
-        legend.box.just = "left",
-        legend.box.background = element_rect()) 
-
-
-  scale_fill_discrete(limits = c("Republican", "Democrat", 
-                                      "Bipartisan, but mostly Republican", 
-                                      "Bipartisan", "N/A",
-                                      "Bipartisan, but mostly Democratic",
-                                      "Independent", 
-                                      "Mean Donations"))
-
-frequent %>% mutate(party = fct_relevel(Party, c("Republican", "Democrat", 
-                                      "Bipartisan, but mostly Republican", 
-                                      "Bipartisan", "N/A",
-                                      "Bipartisan, but mostly Democratic",
-                                      "Independent", 
-                                      "Mean Donations")))
-```
-
-## sum of all donations
+## Question: What is the sum of all of the donations made by these owners? 
 ```{r}
 sum_donations <- frequent %>% group_by(Owner) %>%
   summarise(sum = sum(amount)) %>%
@@ -276,11 +202,12 @@ ggplot(data = cj_party, aes(x = party, y = n, fill = Party)) +
         plot.title = element_text(family = "mono",
                                   face = "bold",
                                   hjust = 0.5,
-                                  size = 13,
+                                  size = 18,
                                   margin = margin(c(t = 50,
                                                     b = 50)),
                                   vjust = 10),
-        axis.text = element_text(family = "mono"),
+        axis.text = element_text(family = "mono",
+                                 face = "bold"),
         legend.title = element_text(family = "mono",
                                     face = "bold"),
         legend.text = element_text(family = "mono"),
@@ -291,7 +218,9 @@ ggplot(data = cj_party, aes(x = party, y = n, fill = Party)) +
                                     face = "italic",
                                     margin = margin(t = 20)),
         axis.title.y = element_text(family = "mono",
-                                    margin = margin(t = 20, b = 20, r = 20)))
+                                    margin = margin(t = 20, b = 20, r = 20)),
+        legend.key.size = unit(0.8, 'cm'),
+        legend.box.background = element_rect())
 
 table_cjparty <- cj_party %>% arrange(desc(n)) %>%
   select(Party, n) %>%
@@ -332,17 +261,19 @@ ggplot(data = recipients, aes(x = recipient, y = n, fill = Party)) +
   geom_col(colour = "black") +
   coord_flip() +
   labs(x = " ",
-       y = "Count of Donations") +
+       y = " ") +
   labs(title = "Organizations Receiving Most Donations Among All Owners") +
   scale_fill_brewer(palette = "Accent") +
   theme(legend.position = "bottom") +
   scale_x_discrete(labels = new_names) +
   theme(plot.title = element_text(family = "mono",
                                   face = "bold",
-                                  margin = margin(c(t = 50,
-                                                    b = 50)),
-                                  vjust = 7),
-        axis.text = element_text(family = "mono"),
+                                  margin = margin(c(t = 40,
+                                                    b = 40)),
+                                  vjust = 7,
+                                  size = 18),
+        axis.text = element_text(family = "mono",
+                                 face = "bold"),
         axis.title = element_text(family = "mono",
                                   size = 8),
         axis.title.x = element_text(size = 10,
@@ -350,9 +281,12 @@ ggplot(data = recipients, aes(x = recipient, y = n, fill = Party)) +
                                                     b = 10)),
         legend.title = element_text(family = "mono",
                                     face = "bold"),
-        legend.text = element_text(family = "mono"),
+        legend.text = element_text(family = "mono",
+                                   face = "bold"),
         axis.ticks = element_blank(),
-         legend.box.background = element_rect())
+        legend.key.size = unit(1, 'cm'),
+         legend.box.background = element_rect()) +
+    geom_text(data = recipients, aes(label = n, fontface = "bold"), size = 5, hjust = -0.25)
 
 pol_donations %>% group_by(League) %>%
   summarise(n = n()) %>%
@@ -391,9 +325,11 @@ ggplot(data = top10, aes(x = order, y = NetWorth, fill = Industry)) +
        y = "Net Worth",
        caption = "Measured in Billions",
        colour = "Industry",
-       title = "2021 Forbes Billionaires with the Highest Net Worth") +
+       title = "2021 Forbes Billionaires",
+       subtitle = "Examining the Billionaires with the Highest Net Worth from 2021") +
   scale_fill_viridis_d() +
   scale_x_discrete(labels = new_names2) +
+  theme(legend.position = c(0.9, 0.18)) +
   theme(axis.title = element_text(family = "mono",
                                   face = "bold",
                                   margin = margin(c(t = 30,
@@ -406,23 +342,30 @@ ggplot(data = top10, aes(x = order, y = NetWorth, fill = Industry)) +
                                   margin = margin(c(t = 15,
                                                     b = 15,
                                                     vjust = 15)),
-                                  size = 15),
-        axis.title.x = element_text(vjust = -3),
+                                  size = 20),
+        plot.subtitle = element_text(family = "mono",
+                                     size = 12,
+                                     face = "italic",
+                                       vjust = 2.5),
+        axis.title.x = element_text(vjust = -3,
+                                    size = 15),
         axis.title.y = element_text(vjust = 2),
-        legend.margin = margin(c(t = 30, b = 30)),
         legend.title = element_text(family = "mono",
                                     face = "bold",
-                                    size = 8),
+                                    size = 15),
         legend.text = element_text(family = "mono",
                                    face = "italic",
-                                   size = 8),
+                                   size = 10),
         plot.caption = element_text(family = "mono",
                                     face = "italic",
-                                    vjust = 5,
+                                    vjust = 3,
                                     hjust = 0.5,
                                     margin = margin(c(t = 30,
-                                                      b = 30))),
-        legend.key.size = unit(.3, 'cm'))
+                                                      b = 30)),
+                                    size = 14),
+        legend.key.width = unit(1, 'cm'),
+        legend.key.height = unit(1, 'cm'),
+  legend.box.background = element_rect())
 ```
 
 ## Questions: What is the average age of the billionaires from the 10 countries with the most billionaires? Is there a pattern or do the averages widely differ? Are there any interesting outliers? 
@@ -447,52 +390,73 @@ ggplot(data = countries_10, aes(x = Country, y = age)) +
   geom_point() +
   coord_flip() 
 
-check <- countries_10 %>% filter(age < 25 | age > 97)
-check
+outliers_age <- countries_10 %>% filter(age < 25 | age > 97)
+outliers_age
 
-filter <- countries_10 %>% filter(!is.na(age))
-filter
-filter2 <- filter %>% group_by(Country) %>%
+countries_10_no_missing_values <- countries_10 %>% filter(!is.na(age))
+countries_10_no_missing_values
+
+countries_10_average_age <- filter %>% group_by(Country) %>%
   summarise(Average = mean(age)) %>%
+  arrange(desc(Average)) %>% 
   mutate(order = fct_reorder(.f = Country, .x = Average))
-filter3 <- filter2 %>% rename(age = 'Average')
+countries_10_average_age
 
-ggplot(data = countries_10, aes(x = Country, y = age)) +
-  geom_point(alpha = 0.4) +
+countries_10_average_age %>% arrange(desc(Average))
+countries_10_average_age %>% arrange(Average)
+
+level_order3 <- factor(countries_10$Country, level = c('China',
+                                                                   'Russia',
+                                                                   'Brazil',
+                                                                   'Germany',
+                                                                   'Canada',
+                                                                   'Hong Kong',
+                                                                   'United States',
+                                                                   'United Kingdom',
+                                                                   'India',
+                                                       'Italy'))
+                                                                   
+ggplot(data = countries_10, aes(x = level_order3, y = age)) +
+  geom_point(alpha = 0.7, colour = "goldenrod1") +
   coord_flip() +
-  geom_point(data = filter2, aes(x = order, y = Average, colour = "Mean Age of Billionaires"),
-             size = 2.5) +
-  scale_colour_manual(values = c("Mean Age of Billionaires" = "red")) +
-  labs(x = "Country", 
-       y = "Age",
+  geom_point(data = countries_10_average_age, aes(x = Country, y = Average, colour = "Mean Age of Billionaires"),
+             size = 6,
+             shape = 18) +
+  scale_colour_manual(values = c("Mean Age of Billionaires" = "navy")) +
+  labs(x = " ", 
+       y = " ",
        title = "Average Age of Billionaires by Country") +
   theme(legend.position = "bottom") +
   theme(axis.title = element_text(family = "mono",
                                   face = "bold"),
         axis.text = element_text(family = "mono"),
+        axis.text.y = element_text(face = "bold"),
+        axis.text.x = element_text(face = "bold"),
         plot.title = element_text(family = "mono",
-                                  face = "bold"),
+                                  face = "bold",
+                                  size = 18,
+                                  margin = margin(c(t = 50,
+                                                    b = 50)),
+                                  vjust = 10),
         axis.ticks = element_blank(),
         legend.title = element_blank(),
         legend.text = element_text(family = "mono",
-                                   face = "italic"), 
+                                   face = "bold"), 
         plot.caption = element_text(family = "mono",
                                     size = 9,
                                     face = "italic"),
+        legend.key.size = unit(1.2, 'cm'),
   legend.box.background = element_rect())
 ```
 
 ## Outliers labeled 
 ```{r}
- 
-countries10_2 <- countries_10 %>% mutate()
-
 ggplot(data = countries_10, aes(x = Country, y = age)) +
-  geom_point(alpha = 0.4, size = 1.5) +
+  geom_point(alpha = 0.4, size = 1.5, colour = "goldenrod1") +
   coord_flip() +
   geom_point(data = filter2, aes(x = order, y = Average, colour = "Mean Age of Billionaires"),
-             size = 2.5, shape = 8) +
-  scale_colour_manual(values = c("Mean Age of Billionaires" = "red")) +
+             size = 2.5) +
+  scale_colour_manual(values = c("Mean Age of Billionaires" = "navy")) +
   labs(x = "Country", 
        y = "Age",
        title = "Average Age of Billionaires by Country") +
@@ -510,9 +474,39 @@ ggplot(data = countries_10, aes(x = Country, y = age)) +
                                     size = 9,
                                     face = "italic")) +
   theme(legend.position = "none") +
-  geom_label_repel(data = check, aes(label = age)) +
-  geom_text_repel(data = check, aes(label = Name, fontface = "bold"), size = 2) +
-  geom_text_repel(data = check, aes(label = Source))
+    geom_label_repel(data = outliers_age, aes(label = age))
+  
+  ggplot(data = countries_10, aes(x = level_order3, y = age)) +
+  geom_point(alpha = 0.7, colour = "goldenrod1") +
+  coord_flip() +
+  geom_point(data = countries_10_average_age, aes(x = Country, y = Average, colour = "Mean Age of Billionaires"),
+             size = 6,
+             shape = 18) +
+  scale_colour_manual(values = c("Mean Age of Billionaires" = "navy")) +
+  labs(x = " ", 
+       y = " ",
+       title = "Average Age of Billionaires by Country") +
+  theme(legend.position = "bottom") +
+  theme(axis.title = element_text(family = "mono",
+                                  face = "bold"),
+        axis.text = element_text(family = "mono"),
+        axis.text.y = element_text(face = "bold"),
+        axis.text.x = element_text(face = "bold"),
+        plot.title = element_text(family = "mono",
+                                  face = "bold",
+                                  size = 18,
+                                  margin = margin(c(t = 50,
+                                                    b = 50)),
+                                  vjust = 10),
+        axis.ticks = element_blank(),
+        legend.title = element_blank(),
+        legend.text = element_text(family = "mono",
+                                   face = "bold"), 
+        plot.caption = element_text(family = "mono",
+                                    size = 9,
+                                    face = "italic"),
+        legend.key.size = unit(1.2, 'cm'),
+  legend.box.background = element_rect()) 
 ```
 
 ## Average labeled 
@@ -577,23 +571,38 @@ ggplot(data = above_or_below_us, aes(x = order, y = networth, colour = above_avg
       subtitle = "Do these billionaires fall above or below the average billionaire net worth in the U.S.?") +
   theme(axis.text = element_text(family = "mono"),
         axis.title = element_text(family = "mono"),
-        legend.text = element_text(family = "mono"),
+        legend.text = element_text(family = "mono",
+                                   face = "bold"),
         legend.title = element_text(family = "mono",
-                                    face = "bold"),
+                                    face = "bold",
+                                    size = 10),
         plot.caption = element_text(family = "mono",
-                                    hjust = 0.5),
+                                    hjust = 0.5,
+                                    size = 15, 
+                                    vjust = 1,
+                                    margin = margin(c(t = 10,
+                                                      b = 20))),
         plot.title = element_text(family = "mono",
                                   face = "bold",
-                                  margin = margin(c(t = 10, b = 10))),
+                                  margin = margin(c(t = 20,
+                                                    b = 20)),
+                                  vjust = 2.5, 
+                                  size = 20),
         plot.subtitle = element_text(family = "mono",
                                      face = "italic",
                                      margin = margin(c(t = 10, b = 10)),
-                                     vjust = 2),
+                                     vjust = 2.5,
+                                     size = 15),
         axis.title.x = element_text(face = "bold",
-                                    margin = margin(c(t = 10, b = 10))),
-        axis.text.y = element_text(face = "italic"),
+                                    margin = margin(c(t = 10, b = 10)),
+                                    size = 15),
+        axis.text.y = element_text(face = "italic",
+                                   size = 10),
         axis.ticks = element_blank(),
-        legend.box.background = element_rect()) 
+        legend.box.background = element_rect(),
+        legend.position = c(0.885, 0.2),
+         legend.key.width = unit(5, 'cm'),
+        legend.key.height = unit(3, 'cm'))
 ```
 
 ## Questions: How many billionaires are there from the top 30 countries on the list? Do developed democracies have the most billionaires on the list?
@@ -615,11 +624,20 @@ ggplot(data = country_30, aes(x = order, y = n)) +
   labs(x = " ", 
        y = " ",
        title = "How Many Billionaires Are There From the Top 30 Countries?") +
-  theme(plot.title = element_text(family = "mono"),
-        axis.text = element_text(family = "mono"),
+  theme(plot.title = element_text(family = "mono",
+                                  size = 20,
+                                  face = "bold",
+                                   margin = margin(c(t = 40,
+                                                    b = 50)),
+                                  vjust = 5),
+        axis.text = element_text(family = "mono",
+                                 face = "bold"),
         axis.title = element_text(family = "mono")) +
-  geom_text(aes(label = n, fontface = "bold", family = "mono"), hjust = -0.1, size = 3.2, colour = "black")
+  geom_text(aes(label = n, fontface = "bold", family = "mono"), hjust = -0.5, size = 5, colour = "black")
+```
 
+## bar plot
+```{r}
 ggplot(data = country_30, aes(x = order, y = n, fill = n)) +
   geom_col(colour = "black") +
   coord_flip() +
@@ -628,41 +646,20 @@ ggplot(data = country_30, aes(x = order, y = n, fill = n)) +
        title = "How Many Billionaires Are There From the Top 30 Countries?",
        fill = "Count") +
   theme(plot.title = element_text(family = "mono",
-                                  face = "bold"),
-        axis.text = element_text(family = "mono"),
+                                  face = "bold",
+                                  size = 20,
+                                   margin = margin(c(t = 40,
+                                                    b = 50)),
+                                  vjust = 5),
+        axis.text = element_text(family = "mono",
+                                 face = "bold"),
         axis.title = element_text(family = "mono"),
         legend.title = element_text(family = "mono"),
         legend.text = element_text(family = "mono"),
         axis.ticks = element_blank(),
         legend.position = "none") +
   scale_fill_viridis_b(n.breaks = 6) +
-  geom_text(aes(label = n, fontface = "bold", family = "mono"), hjust = -0.1, size = 3, colour = "black")
-```
-
-## usa billionaires
-```{r}
-library(plotly)
-us_forbes_billionaires <- combined_billionaires %>% filter(Country.x == "United States")
-us_forbes_billionaires
-
-us_forbes_billionaires %>% group_by(Industry) %>%
-  summarise(n = n()) %>%
-  arrange(desc(n))
-
-plot10 <- ggplot(data = us_forbes_billionaires, aes(x = NetWorth.x, y = Age.x,
-                                                    label = Name, colour = Industry)) +
-  geom_jitter() +
-  labs(x = "NetWorth",
-       y = "Age",
-       title = "Billionaires in the U.S.") +
-  theme(plot.title = element_text(face = "bold",
-                                  size = 15,
-                                  margin = margin(c(t = 10, b = 10))),
-        axis.ticks = element_blank(),
-        legend.title = element_text(face = "bold"),
-        axis.title = element_text(face = "bold"))
-
-ggplotly(plot10, tooltip = "label")
+  geom_text(aes(label = n, fontface = "bold", family = "mono"), hjust = -0.5, size = 5, colour = "black")
 ```
 
 ## How many are self-made (from entire list) ? 
@@ -683,7 +680,7 @@ ggplot(data = self_made, aes(x = Self_made, y = n, fill = Self_made)) +
                                   face = "bold",
                                   margin = margin(c(t = 30)),
                                   vjust = 8,
-                                  size = 15),
+                                  size = 20),
         legend.text = element_text(family = "mono"),
         axis.text = element_text(family = "mono"),
         axis.text.x = element_text(size = 15,
@@ -741,9 +738,7 @@ tidy_education %>% group_by(Degree) %>%
   arrange(desc(n))
 
 tidy_education %>% filter(University == "Harvard University")
-```
 
-```{r}
 tidy_education2 <- tidy_education %>% filter(Degree == "Bachelor of Arts/Science" |
                           Degree == "Master of Business Administration" |
                           Degree == "Master of Science" |
@@ -770,14 +765,55 @@ ggplot(data = tidy_education2, aes(x = Degree, y = NetWorth)) +
 ggplot(data = tidy_education2, aes(x = Degree, y = NetWorth)) +
   geom_violin() +
   coord_flip()
-
-library(ggridges)
-ggplot(data = tidy_education2, aes(x = Degree, y = NetWorth)) +
-  geom_density_ridges()
 ``` 
+
+## usa billionaires
+```{r}
+library(plotly)
+us_forbes_billionaires <- combined_billionaires %>% filter(Country.x == "United States")
+us_forbes_billionaires
+
+us_forbes_billionaires %>% group_by(Industry) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n))
+
+plot10 <- ggplot(data = us_forbes_billionaires, aes(x = NetWorth.x, y = Age.x,
+                                                    label = Name, colour = Industry)) +
+  geom_jitter() +
+  labs(x = "NetWorth",
+       y = "Age",
+       title = "Billionaires in the U.S.") +
+  theme(plot.title = element_text(face = "bold",
+                                  size = 15,
+                                  margin = margin(c(t = 10, b = 10))),
+        axis.ticks = element_blank(),
+        legend.title = element_text(face = "bold"),
+        axis.title = element_text(face = "bold"))
+
+ggplotly(plot10, tooltip = "label")
+```
+
+## Map
+```{r}
+library(maps)
+library(tidyverse)
+state_df <- ggplot2::map_data("state")
+
+forbes_billionaires_geo <- read_csv("data/forbes_billionaires_geo.csv")
+forbes_billionaires_geo %>% select(geometry, everything())
+forbes_billionaires_geo %>% separate(col = geometry, into = c(""))
+```
 
 ## New Data Set
 ```{r}
+pvp_dataset <- read_csv("data/pvp_dataset.csv")
+pvp_dataset
 
+ggplot(data = pvp_dataset, aes(x = year, y = salary)) +
+  geom_line()
+pvp_dataset_2 <- read_csv("data/pvp_dataset 2.csv")
+pvp_dataset_2
 ```
+
+
 
