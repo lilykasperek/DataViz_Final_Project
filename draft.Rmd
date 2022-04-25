@@ -420,8 +420,7 @@ ggplot(data = countries_10, aes(x = level_order3, y = age)) +
   geom_point(alpha = 0.7, colour = "goldenrod1") +
   coord_flip() +
   geom_point(data = countries_10_average_age, aes(x = Country, y = Average, colour = "Mean Age of Billionaires"),
-             size = 6,
-             shape = 18) +
+             size = 4) +
   scale_colour_manual(values = c("Mean Age of Billionaires" = "navy")) +
   labs(x = " ", 
        y = " ",
@@ -611,33 +610,11 @@ country <- forbes_billionaires %>% group_by(Country) %>%
   summarise(n = n()) %>%
   arrange(desc(n)) 
 
+
 country_30 <- country %>% slice(1:30) %>%
   mutate(order = fct_reorder(.f = Country, .x = n))
 country_30
 
-ggplot(data = country_30, aes(x = order, y = n)) +
-  geom_point(colour = "orange") +
-  geom_segment(aes(x = order, xend = order, y = 0, yend = n), colour = "blue", linetype = "dotdash") +
-  coord_flip() +
-  theme_light() +
-  theme(axis.ticks.x = element_blank()) +
-  labs(x = " ", 
-       y = " ",
-       title = "How Many Billionaires Are There From the Top 30 Countries?") +
-  theme(plot.title = element_text(family = "mono",
-                                  size = 20,
-                                  face = "bold",
-                                   margin = margin(c(t = 40,
-                                                    b = 50)),
-                                  vjust = 5),
-        axis.text = element_text(family = "mono",
-                                 face = "bold"),
-        axis.title = element_text(family = "mono")) +
-  geom_text(aes(label = n, fontface = "bold", family = "mono"), hjust = -0.5, size = 5, colour = "black")
-```
-
-## bar plot
-```{r}
 ggplot(data = country_30, aes(x = order, y = n, fill = n)) +
   geom_col(colour = "black") +
   coord_flip() +
@@ -693,7 +670,7 @@ ggplot(data = self_made, aes(x = Self_made, y = n, fill = Self_made)) +
              label.size = 0.5) 
 ```
 
-## Continuing to mess around 
+## Make just one more visualization that makes sense 
 ```{r}
 industry <- billionaires %>% group_by(Industry) %>%
   summarise(n = n()) %>%
@@ -793,7 +770,7 @@ plot10 <- ggplot(data = us_forbes_billionaires, aes(x = NetWorth.x, y = Age.x,
 ggplotly(plot10, tooltip = "label")
 ```
 
-## Map
+## Try to make the Map
 ```{r}
 library(maps)
 library(tidyverse)
@@ -804,16 +781,44 @@ forbes_billionaires_geo %>% select(geometry, everything())
 forbes_billionaires_geo %>% separate(col = geometry, into = c(""))
 ```
 
-## New Data Set
+## New Data Set 
+
+## Potential questions:
+
+## How has President salary changed over time
+
+## Is there a predominant party or evenly split 
+
+## How much more do presidents make compared to vice presidents 
+
+## Has salary ever increased from term to term 
 ```{r}
 pvp_dataset <- read_csv("data/pvp_dataset.csv")
 pvp_dataset
 
 ggplot(data = pvp_dataset, aes(x = year, y = salary)) +
   geom_line()
+
 pvp_dataset_2 <- read_csv("data/pvp_dataset 2.csv")
 pvp_dataset_2
+
+pres_salary <- pvp_dataset_2 %>% filter(position_title == "PRESIDENT OF THE UNITED STATES")
+pres_salary
+
+ggplot(data = pres_salary, aes(x = year, y = salary)) +
+  geom_line()
+
+ggplot(data = pres_salary, aes(x = year, y = salary, colour = salary)) +
+  geom_line() 
+
+pres_salary %>% group_by(party) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n))
+
+ggplot(data = pres_salary, aes(x = salary, y = party)) +
+  geom_point()
+
+ggplot(data = pres_salary, aes(x = , y = party, colour = salary)) +
+  geom_point()
 ```
-
-
 

@@ -107,6 +107,10 @@ Worked on making the visualizations “prettier." Changed final lollipop visuali
 
 Today I kept working on improving the visualizations I had and made several new visualizations as well. My next step is finding another data set and working extensively with that data set. 
 
-## April 24th Before Class
+## April 25th Before Class
 
 Throughout the weekend I found a new data set to use for my third and final section of my blogdown. I also finalized my theme modifications on my other visualizations and have made them pretty consistent with the spacing and text sizing. I have been working a lot on the style component of my project/visualizations. I am working on coming up with one or two more questions for the forbes billionaires data set, as well as the questions for the new data sets I found. 
+
+## April 25th After Class
+
+This class I worked on setting up the actual blogdown website and connecting it to Git for a good amount of time. I also started making some preliminary visualizations for the last data set I want to use in this project. 
