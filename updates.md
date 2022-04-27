@@ -118,3 +118,7 @@ This class I worked on setting up the actual blogdown website and connecting it 
 ## April 27th Before Class
 
 All of the work I did since last class was in my blogdown project so I won't be submitting any of the actual work. I finalized my first tab. I changed the fonts of the questions that go along with my visualizations and made my visualizations as uniform in style as I could. My next steps are to finalize my other sections and change the theme of the actual website itself. 
+
+## April 27th After Class
+
+I continued working on the blogdown in my blogdown project. The website runs and is starting to come together nicely. I just need to create a few more visualizations and fix a few things. I should definitely have something that runs by Monday that resembles what I turn in for the final project. 

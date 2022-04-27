@@ -33,3 +33,7 @@ James is working on cleaning up his tennis data for his shiny app.
 ## April 25th 
 
 Clara is finishing up her beer and breweries shiny app. She just wants to fix a few minor things pertaining to colour scales/colours. 
+
+## April 27th 
+
+Patrick is working on his Mario kart shiny app. He plans on adding a few more tabs before Monday. 
