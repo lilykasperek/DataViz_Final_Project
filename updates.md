@@ -114,3 +114,7 @@ Throughout the weekend I found a new data set to use for my third and final sect
 ## April 25th After Class
 
 This class I worked on setting up the actual blogdown website and connecting it to Git for a good amount of time. I also started making some preliminary visualizations for the last data set I want to use in this project. 
+
+## April 27th Before Class
+
+All of the work I did since last class was in my blogdown project so I won't be submitting any of the actual work. I finalized my first tab. I changed the fonts of the questions that go along with my visualizations and made my visualizations as uniform in style as I could. My next steps are to finalize my other sections and change the theme of the actual website itself. 
